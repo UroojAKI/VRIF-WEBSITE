@@ -864,7 +864,7 @@ export default function Home() {
           </ScrollFloat3D>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { icon: MapPin, title: "Office Address", content: "Jnana Sangama, Machhe,\nBelagavi – 590018,\nKarnataka, India", color: "#1a56db", action: null },
+              { icon: MapPin, title: "Office Address", content: "Silver Jubilee Bhavan, VTU Campus,\nJnana Sangama, Machhe,\nBelagavi – 590018,\nKarnataka, India", color: "#1a56db", action: null },
               { icon: Mail, title: "General Enquiries", content: "market@vtuvrif.com", color: "#7c3aed", action: "mailto:market@vtuvrif.com" },
               { icon: Phone, title: "Phone", content: "+91 9019677971\nMon–Fri, 9 AM – 6 PM IST", color: "#10b981", action: "tel:9019677971" },
             ].map((card, i) => {
@@ -927,7 +927,7 @@ export default function Home() {
             <div className="md:col-span-4 flex flex-col gap-4">
               <h4 className="text-xs font-black tracking-widest text-slate-400 uppercase">General Inquiries</h4>
               <div className="flex flex-col gap-3 text-sm">
-                <span className="text-slate-500">Jnana Sangama, Machhe,<br />Belagavi – 590018, Karnataka</span>
+                <span className="text-slate-500">Silver Jubilee Bhavan, VTU Campus,<br />Jnana Sangama, Machhe,<br />Belagavi – 590018, Karnataka, India</span>
                 <a href="mailto:market@vtuvrif.com" className="font-extrabold text-blue-600 hover:text-blue-800 transition-colors">market@vtuvrif.com</a>
                 <a href="tel:9019677971" className="font-extrabold text-blue-600 hover:text-blue-800 transition-colors">+91 9019677971</a>
               </div>
