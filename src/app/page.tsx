@@ -249,16 +249,63 @@ function HeroAnimation() {
   );
 }
 
+function SubscribeCard() {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim()) {
+      setSubmitted(true);
+      setEmail("");
+    }
+  };
+
+  return (
+    <div className="max-w-xl mx-auto bg-white rounded-3xl p-8 border border-slate-100 shadow-lg text-center relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-purple-500/5 pointer-events-none" />
+      <div className="relative z-10">
+        <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mx-auto mb-4">
+          <Mail className="w-6 h-6" />
+        </div>
+        <h3 className="text-xl font-black text-slate-800 mb-2">Stay Updated with VRIF</h3>
+        <p className="text-slate-500 text-sm mb-6 leading-relaxed max-w-sm mx-auto">
+          Subscribe to our newsletter for updates on bootcamps, hackathons, incubation cohorts, and mentoring events.
+        </p>
+
+        {submitted ? (
+          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-emerald-600 font-bold text-sm bg-emerald-50 py-3.5 px-6 rounded-2xl border border-emerald-100">
+            🎉 Thank you! You've successfully subscribed to our newsletter.
+          </motion.div>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
+              className="flex-1 px-5 py-3.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm bg-slate-50/50"
+            />
+            <button
+              type="submit"
+              className="px-6 py-3.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer whitespace-nowrap"
+            >
+              Subscribe
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
   const { scrollY } = useScroll();
-  const bgLogoY = useTransform(scrollY, [0, 2000], [0, -300]);
-  const bgLogoScale = useTransform(scrollY, [0, 1000], [1, 1.3]);
-  const bgLogoRotate = useTransform(scrollY, [0, 3000], [0, 15]);
-  const bgLogoOpacity = useTransform(scrollY, [0, 500, 1500, 3000], [0.22, 0.32, 0.26, 0.18]);
   const heroTextY = useTransform(scrollY, [0, 500], [0, -50]);
 
   useEffect(() => {
@@ -307,8 +354,8 @@ export default function Home() {
 
   const programs = [
     { id: "vinyasa", name: "VINYASA", tagline: "Nurturing Innovation & Entrepreneurship", icon: Sparkles, color: "#1a56db", bg: "#e8f0fe" },
-    { id: "samshodhana", name: "SAMSHODHANA", tagline: "Skill | Research | Innovate | Enterprise", icon: BookOpen, color: "#7c3aed", bg: "#ede9fe", logo: "/images/SamShoDhana-removebg-preview.png" },
-    { id: "she-innovates", name: "SHE INNOVATES", tagline: "Empowering Women to Lead Innovation", icon: Star, color: "#ec4899", bg: "#fce7f3", logo: "/images/She_Innovates_-removebg-preview.png" },
+    { id: "samshodhana", name: "SAMSHODHANA", tagline: "Skill | Research | Innovate | Enterprise", icon: BookOpen, color: "#7c3aed", bg: "#ede9fe" },
+    { id: "she-innovates", name: "SHE INNOVATES", tagline: "Empowering Women to Lead Innovation", icon: Star, color: "#ec4899", bg: "#fce7f3" },
     { id: "nain-pmu", name: "NAIN PMU", tagline: "New Age Innovation Network", icon: Globe, color: "#f59e0b", bg: "#fef3c7" },
     { id: "launchpad", name: "VRIF LAUNCHPAD", tagline: "Transforming Ideas into Market-Ready Products", icon: Rocket, color: "#10b981", bg: "#d1fae5" },
     { id: "tbi-navodaya", name: "TBI NAVODAYA", tagline: "Building Startups Through Structured Incubation", icon: TrendingUp, color: "#6366f1", bg: "#e0e7ff" },
@@ -338,7 +385,7 @@ export default function Home() {
   const tbiTeam = [
     { name: "Santosh Ittanagi", role: "Chief Executive Officer", img: "/images/santosh.webp", linkedin: "https://www.linkedin.com/in/santosh-ittanagi-96944011a/" },
     { name: "Absar Patel", role: "Operations Manager", img: "/images/absar.webp", linkedin: "https://www.linkedin.com/in/absar-patel-8b2196169/" },
-    { name: "Chetan Haragabal", role: "Incubation Manager (Outreach & Market Content)", img: "/images/chetan h .jpeg", linkedin: "https://www.linkedin.com/in/chetan-haragabal-ab8705268/" },
+    { name: "Chetan Haragabal", role: "Incubation Manager (Outreach & Market Content)", img: "/images/chetan_h.webp", linkedin: "https://www.linkedin.com/in/chetan-haragabal-ab8705268/" },
     { name: "Chitra Thakre", role: "Incubation Manager (Mentor Connect & Facility Management)", img: "/images/chitra.webp", linkedin: "https://www.linkedin.com/in/chitra-thakre-3ba8b320a/" },
     { name: "Vikas Rudrapur", role: "Associate – Events & Programs", img: "/images/vikas.webp", linkedin: "https://www.linkedin.com/in/vikas-rudrapur-4b3516235/" },
     { name: "Shrinath Basapuri", role: "Account Officer", img: "/images/shreenath.webp", linkedin: "https://www.linkedin.com/in/shrinath-basapuri-bb8b26211/" },
@@ -370,14 +417,14 @@ export default function Home() {
     <div className="flex flex-col min-h-screen relative" style={{ background: "#f0f4ff", color: "#0d1b3e" }}>
       <RocketCursor />
 
-      {/* ═══ FIXED VRIF LOGO BACKGROUND — large, visible, dynamic ═══ */}
+      {/* ═══ FIXED VRIF LOGO BACKGROUND — large, visible, static ═══ */}
       <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
-        <motion.div style={{ y: bgLogoY, scale: bgLogoScale, rotate: bgLogoRotate, opacity: bgLogoOpacity }}>
+        <div style={{ transform: "rotate(15deg) scale(1)", opacity: 0.22 }}>
           <Image src="/images/vrif_logo_cropped.webp" alt="" width={1200} height={500}
             className="object-contain select-none"
             style={{ filter: "saturate(0.5) opacity(0.85)", maxWidth: "95vw" }}
             priority />
-        </motion.div>
+        </div>
       </div>
 
       {/* ═══ SCROLL-FOLLOWING 3D OBJECT ═══ */}
@@ -484,13 +531,13 @@ export default function Home() {
 
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.36 }}
                 className="flex flex-wrap gap-4">
-                <button onClick={() => scrollTo("contact")}
-                  className="btn-primary px-7 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer">
-                  <Mail className="w-4 h-4" /> Contact Us
-                </button>
                 <button onClick={() => scrollTo("programs")}
-                  className="btn-outline px-7 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer">
+                  className="btn-primary px-7 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer">
                   Explore Programs <ChevronRight className="w-4 h-4" />
+                </button>
+                <button onClick={() => scrollTo("contact")}
+                  className="btn-outline px-7 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer">
+                  <Mail className="w-4 h-4" /> Contact Us
                 </button>
               </motion.div>
             </motion.div>
@@ -515,8 +562,9 @@ export default function Home() {
       <div className="relative overflow-hidden py-4 border-y-2 border-blue-100 bg-white/70 backdrop-blur-[1px] z-10">
         <div className="flex gap-0 animate-marquee whitespace-nowrap">
           {[...marqueeItems, ...marqueeItems].map((item, i) => (
-            <span key={i} className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 uppercase tracking-widest px-8">
-              {item}<span className="w-1.5 h-1.5 rounded-full bg-blue-300 inline-block" />
+            <span key={i} className="inline-flex items-center text-xs font-bold text-blue-600 uppercase tracking-widest px-6">
+              <span className="mr-6 text-blue-400 font-bold select-none">•</span>
+              {item}
             </span>
           ))}
         </div>
@@ -674,11 +722,7 @@ export default function Home() {
                     <div className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl" style={{ background: program.color }} />
                     <div className="flex items-start justify-between mb-5">
                       <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: program.bg }}>
-                        {program.logo ? (
-                          <Image src={program.logo} alt={program.name} width={40} height={28} className="object-contain" />
-                        ) : (
-                          <Icon className="w-6 h-6" style={{ color: program.color }} />
-                        )}
+                        <Icon className="w-6 h-6" style={{ color: program.color }} />
                       </div>
                     </div>
                     <h3 className="text-base font-black text-slate-800 mb-2">{program.name}</h3>
@@ -827,26 +871,17 @@ export default function Home() {
 
       <hr className="section-divider" />
 
-      {/* ═══════════════════ EVENTS — EMPTY / COMING SOON ═══════════════════ */}
+      {/* ═══════════════════ EVENTS — NEWSLETTER SUBSCRIBE ═══════════════════ */}
       <section className="py-20 bg-transparent relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollFloat3D>
-            <div className="text-center mb-8">
+            <div className="text-center mb-10">
               <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">Innovation Calendar</span>
               <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Events & <span className="text-gradient-purple">Programs</span></h2>
             </div>
           </ScrollFloat3D>
           <ScrollFloat3D delay={0.1}>
-            <div className="text-center py-16">
-              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity }}
-                className="w-20 h-20 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-6">
-                <Sparkles className="w-10 h-10 text-blue-400" />
-              </motion.div>
-              <h3 className="text-2xl font-black text-slate-700 mb-3">Coming Soon</h3>
-              <p className="text-slate-500 max-w-md mx-auto text-sm leading-relaxed">
-                Exciting events and programs are being planned. Stay tuned for hackathons, bootcamps, mentorship sessions, and more.
-              </p>
-            </div>
+            <SubscribeCard />
           </ScrollFloat3D>
         </div>
       </section>
@@ -865,8 +900,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
               { icon: MapPin, title: "Office Address", content: "Silver Jubilee Bhavan, VTU Campus,\nJnana Sangama, Machhe,\nBelagavi – 590018,\nKarnataka, India", color: "#1a56db", action: null },
-              { icon: Mail, title: "General Enquiries", content: "market@vtuvrif.com", color: "#7c3aed", action: "mailto:market@vtuvrif.com" },
-              { icon: Phone, title: "Phone", content: "+91 9019677971\nMon–Fri, 9 AM – 6 PM IST", color: "#10b981", action: "tel:9019677971" },
+              { icon: Mail, title: "General Enquiries", content: "ops@vtuvrif.com", color: "#7c3aed", action: "mailto:ops@vtuvrif.com" },
+              { icon: Phone, title: "Phone", content: "+91 97394 44818\nMon–Fri, 9 AM – 6 PM IST", color: "#10b981", action: "tel:9739444818" },
             ].map((card, i) => {
               const Icon = card.icon;
               return (
@@ -925,12 +960,12 @@ export default function Home() {
               </div>
             </div>
             <div className="md:col-span-4 flex flex-col gap-4">
-              <h4 className="text-xs font-black tracking-widest text-slate-400 uppercase">General Inquiries</h4>
-              <div className="flex flex-col gap-3 text-sm">
-                <span className="text-slate-500">Silver Jubilee Bhavan, VTU Campus,<br />Jnana Sangama, Machhe,<br />Belagavi – 590018, Karnataka, India</span>
-                <a href="mailto:market@vtuvrif.com" className="font-extrabold text-blue-600 hover:text-blue-800 transition-colors">market@vtuvrif.com</a>
-                <a href="tel:9019677971" className="font-extrabold text-blue-600 hover:text-blue-800 transition-colors">+91 9019677971</a>
-              </div>
+              <h4 className="text-xs font-black tracking-widest text-slate-400 uppercase">Office Location</h4>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Silver Jubilee Bhavan, VTU Campus,<br />
+                Jnana Sangama, Machhe,<br />
+                Belagavi – 590018, Karnataka, India
+              </p>
             </div>
           </div>
           <div className="border-t border-blue-50 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">

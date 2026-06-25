@@ -10,11 +10,13 @@ interface AnimatedCounterProps {
 
 export default function AnimatedCounter({ value, label }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [displayValue, setDisplayValue] = useState("0");
+  // Using a less restrictive margin so it animates reliably on mobile screens
+  const isInView = useInView(ref, { once: true, margin: "-20px" });
+  const [displayValue, setDisplayValue] = useState(value);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
-    if (!isInView) return;
+    if (!isInView || hasAnimated) return;
 
     // Parse the number, prefix, and suffix
     // Matches numbers with potential decimals, rupee symbol, or trailing text like Lakh/Month/+
@@ -22,7 +24,7 @@ export default function AnimatedCounter({ value, label }: AnimatedCounterProps) 
     const match = value.match(numberRegex);
     
     if (!match) {
-      setDisplayValue(value);
+      setHasAnimated(true);
       return;
     }
 
@@ -36,6 +38,9 @@ export default function AnimatedCounter({ value, label }: AnimatedCounterProps) 
     const frameRate = 1000 / 60; // 60fps
     const totalFrames = duration / frameRate;
     let frame = 0;
+
+    // Start animating from 0
+    setDisplayValue(`${prefix}0${suffix}`);
 
     const counter = setInterval(() => {
       frame++;
@@ -55,11 +60,12 @@ export default function AnimatedCounter({ value, label }: AnimatedCounterProps) 
       if (frame >= totalFrames) {
         clearInterval(counter);
         setDisplayValue(value); // Ensure exact final value
+        setHasAnimated(true);
       }
     }, frameRate);
 
     return () => clearInterval(counter);
-  }, [isInView, value]);
+  }, [isInView, value, hasAnimated]);
 
   return (
     <span ref={ref} className="font-bold tracking-tight">
