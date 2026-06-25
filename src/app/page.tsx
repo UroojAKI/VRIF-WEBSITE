@@ -419,7 +419,7 @@ export default function Home() {
 
       {/* ═══ FIXED VRIF LOGO BACKGROUND — large, visible, static ═══ */}
       <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
-        <div style={{ transform: "rotate(15deg) scale(1)", opacity: 0.22 }}>
+        <div style={{ transform: "rotate(0deg) scale(1)", opacity: 0.22 }}>
           <Image src="/images/vrif_logo_cropped.webp" alt="" width={1200} height={500}
             className="object-contain select-none"
             style={{ filter: "saturate(0.5) opacity(0.85)", maxWidth: "95vw" }}
