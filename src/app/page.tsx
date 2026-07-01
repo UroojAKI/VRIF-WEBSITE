@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from "framer-motion";
 import {
   Building2, GraduationCap, Users, Cpu, Lightbulb, UserCheck, Rocket,
-  ChevronRight, Download, Mail, Phone, MapPin, Menu, X, Award, Compass, Zap,
+  ChevronRight, ChevronLeft, Download, Mail, Phone, MapPin, Menu, X, Award, Compass, Zap,
   Target, Briefcase, Layers, Sparkles, ArrowRight, Globe, Shield, TrendingUp,
   BookOpen, Star, FlaskConical, Microscope, CircuitBoard, Network
 } from "lucide-react";
@@ -13,6 +13,7 @@ import {
 import AnimatedCounter from "@/components/AnimatedCounter";
 import ProgramDetailsModal from "@/components/ProgramDetailsModal";
 import RocketCursor from "@/components/RocketCursor";
+import galleryData from "./gallery_data.json";
 
 /* ── ScrollFloat3D — scroll-triggered 3D entry animation ── */
 function ScrollFloat3D({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
@@ -300,6 +301,142 @@ function SubscribeCard() {
   );
 }
 
+function GallerySection() {
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  
+  const showMore = () => {
+    if (visibleCount === 6) {
+      setVisibleCount(galleryData.length);
+    } else {
+      setVisibleCount(6);
+      document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (lightboxIndex !== null) {
+      setLightboxIndex((lightboxIndex - 1 + galleryData.length) % galleryData.length);
+    }
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (lightboxIndex !== null) {
+      setLightboxIndex((lightboxIndex + 1) % galleryData.length);
+    }
+  };
+
+  return (
+    <section id="gallery" className="py-24 relative z-10 bg-transparent">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <ScrollFloat3D>
+          <div className="text-center mb-16">
+            <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">Visual Insights</span>
+            <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">VRIF <span className="text-gradient-blue">Gallery</span></h2>
+            <p className="text-sm text-slate-500 max-w-md mx-auto mt-4 leading-relaxed">Explore snapshots from our workshops, innovation labs, and ecosystem activities across Karnataka.</p>
+          </div>
+        </ScrollFloat3D>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {galleryData.slice(0, visibleCount).map((img, i) => (
+            <ScrollFloat3D key={i} delay={(i % 3) * 0.05}>
+              <motion.div
+                whileHover={{ y: -6, scale: 1.02 }}
+                className="relative aspect-[4/3] rounded-3xl overflow-hidden border border-slate-100 shadow-md hover:shadow-xl transition-all cursor-pointer group bg-slate-100"
+                onClick={() => setLightboxIndex(i)}
+              >
+                <Image
+                  src={img.src}
+                  alt={`VRIF Gallery Image ${i + 1}`}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <span className="text-white text-xs font-bold uppercase tracking-wider">View Photo</span>
+                </div>
+              </motion.div>
+            </ScrollFloat3D>
+          ))}
+        </div>
+
+        {galleryData.length > 6 && (
+          <div className="text-center mt-12">
+            <button
+              onClick={showMore}
+              className="btn-outline px-8 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer mx-auto"
+            >
+              {visibleCount === 6 ? "View More Photos" : "Collapse Gallery"}
+              <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${visibleCount > 6 ? "rotate-90" : ""}`} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {lightboxIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[99999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
+            onClick={() => setLightboxIndex(null)}
+          >
+            {/* Close button */}
+            <button
+              className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
+              onClick={() => setLightboxIndex(null)}
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Prev button */}
+            <button
+              className="absolute left-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10"
+              onClick={handlePrev}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            {/* Image Container */}
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              className="relative max-w-4xl w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 border border-white/10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={galleryData[lightboxIndex].src}
+                alt={`VRIF Gallery Image ${lightboxIndex + 1}`}
+                fill
+                className="object-contain"
+                sizes="(max-width: 1024px) 100vw, 1024px"
+                priority
+              />
+              {/* Image indicator count */}
+              <div className="absolute bottom-6 left-6 bg-slate-950/60 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-4 py-2 rounded-full">
+                {lightboxIndex + 1} / {galleryData.length}
+              </div>
+            </motion.div>
+
+            {/* Next button */}
+            <button
+              className="absolute right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10"
+              onClick={handleNext}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  );
+}
+
 export default function Home() {
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -310,7 +447,7 @@ export default function Home() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["home", "about", "infrastructure", "programs", "team", "resources", "contact"];
+      const sections = ["home", "about", "infrastructure", "programs", "team", "gallery", "resources", "contact"];
       const scrollPosition = window.scrollY + 200;
       for (const section of sections) {
         const el = document.getElementById(section);
@@ -339,6 +476,7 @@ export default function Home() {
     { id: "infrastructure", label: "Labs" },
     { id: "programs", label: "Programs" },
     { id: "team", label: "Team" },
+    { id: "gallery", label: "Gallery" },
     { id: "resources", label: "Resources" },
     { id: "contact", label: "Contact" },
   ];
@@ -836,6 +974,11 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <hr className="section-divider" />
+
+      {/* ═══════════════════ GALLERY ═══════════════════ */}
+      <GallerySection />
 
       <hr className="section-divider" />
 

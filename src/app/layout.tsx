@@ -14,7 +14,7 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata: Metadata = {
-  title: "Visvesvaraya Research & Innovation Foundation (VRIF) | VTU Belagavi",
+  title: "VTU VRIF | Visvesvaraya Research & Innovation Foundation, Belagavi",
   description: "Visvesvaraya Research & Innovation Foundation (VRIF), the Innovation & Entrepreneurship Arm of Visvesvaraya Technological University (VTU), Belagavi, serves as a catalyst for startup growth, incubation, and technology commercialization across Karnataka.",
   keywords: [
     "VRIF",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Visvesvaraya Research & Innovation Foundation (VRIF)" }],
   openGraph: {
-    title: "Visvesvaraya Research & Innovation Foundation (VRIF) | VTU Belagavi",
+    title: "VTU VRIF | Visvesvaraya Research & Innovation Foundation, Belagavi",
     description: "Empowering innovators, researchers, entrepreneurs, and startups to build scalable solutions that create real-world impact across Karnataka.",
     url: "https://vtuvrif.com",
     siteName: "VRIF VTU",
@@ -64,6 +64,37 @@ export default function RootLayout({
     <html lang="en" className={`${outfit.variable} ${rajdhani.variable} scroll-smooth`} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/images/vrif_logo.webp" type="image/webp" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "GovernmentOrganization",
+              "name": "Visvesvaraya Research & Innovation Foundation (VRIF)",
+              "alternateName": ["VTU VRIF", "VRIF VTU", "VRIF Belagavi"],
+              "url": "https://vtuvrif.com",
+              "logo": "https://vtuvrif.com/images/vrif_logo.webp",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Silver Jubilee Bhavan, VTU Campus, Jnana Sangama, Machhe",
+                "addressLocality": "Belagavi",
+                "addressRegion": "Karnataka",
+                "postalCode": "590018",
+                "addressCountry": "IN"
+              },
+              "parentOrganization": {
+                "@type": "CollegeOrUniversity",
+                "name": "Visvesvaraya Technological University (VTU)"
+              },
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+91-97394-44818",
+                "contactType": "customer service",
+                "email": "ops@vtuvrif.com"
+              }
+            })
+          }}
+        />
       </head>
       <body className="bg-[#f0f4ff] text-[#0d1b3e] antialiased min-h-screen flex flex-col selection:bg-blue-200 selection:text-blue-900">
         {children}
