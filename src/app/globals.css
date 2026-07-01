@@ -437,3 +437,49 @@ header, section, footer, .relative.z-10 { position: relative; z-index: 1; }
   transform-origin: 0%;
   z-index: 99999;
 }
+
+/* ---- PORTAL DASHBOARD UPGRADES ---- */
+.perspective-container {
+  perspective: 1500px;
+  transform-style: preserve-3d;
+  width: 100%;
+  height: 100%;
+}
+
+/* Equal Height Cards in Grids */
+.coe-card, .program-card, .team-card, .partner-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.coe-card > *:last-child, 
+.program-card > *:last-child, 
+.team-card > *:last-child {
+  margin-top: auto;
+}
+
+/* Viewport Scroll Locks for Desktop */
+@media (min-width: 1024px) {
+  .portal-container {
+    height: calc(100vh - 112px); /* Viewport height minus header (112px) */
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .portal-content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-bottom: 3rem;
+  }
+}
+@media (max-width: 1023px) {
+  .portal-container {
+    position: relative;
+  }
+  .portal-content-scroll {
+    position: relative;
+  }
+}

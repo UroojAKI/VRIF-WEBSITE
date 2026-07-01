@@ -23,7 +23,7 @@ function ScrollFloat3D({ children, delay = 0 }: { children: React.ReactNode; del
     <motion.div ref={ref}
       initial={{ opacity: 0, y: 50, rotateX: 15 }}
       animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : { opacity: 0, y: 50, rotateX: 15 }}
-      transition={{ duration: 0.65, delay, ease: [0.23, 1, 0.32, 1] }}
+      transition={{ duration: 0.65, delay, ease: [0.23, 1, 0.32, 1] as const }}
       style={{ transformStyle: "preserve-3d" }}>
       {children}
     </motion.div>
@@ -95,7 +95,6 @@ function Floating3DObject() {
   );
 }
 
-/* ── Hero right panel — Karnataka Innovation Ecosystem Dashboard ── */
 /* ── Interactive Innovation Launch Engine (Hero Right Animation) ── */
 function HeroAnimation() {
   return (
@@ -301,16 +300,102 @@ function SubscribeCard() {
   );
 }
 
-function GallerySection() {
+const tabOrder = ["overview", "labs", "programs", "team", "gallery", "contact"];
+
+const tabVariants = {
+  initial: (direction: number) => ({
+    opacity: 0,
+    rotateY: direction > 0 ? 90 : -90,
+    scale: 0.95,
+  }),
+  animate: {
+    opacity: 1,
+    rotateY: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 1, 0.5, 1] as const,
+    },
+  },
+  exit: (direction: number) => ({
+    opacity: 0,
+    rotateY: direction > 0 ? -90 : 90,
+    scale: 0.95,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 1, 0.5, 1] as const,
+    },
+  }),
+};
+
+export default function Home() {
+  const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  const [activeTab, setActiveTab] = useState("overview");
+  const [prevTab, setPrevTab] = useState("overview");
+  
   const [visibleCount, setVisibleCount] = useState(6);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollY, scrollYProgress } = useScroll({ container: containerRef });
+  
+  const heroTextY = useTransform(scrollY, [0, 500], [0, -50]);
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  const direction = tabOrder.indexOf(activeTab) - tabOrder.indexOf(prevTab);
+
+  useEffect(() => {
+    const handleScrollerScroll = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target.scrollTop > 400) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    };
+
+    const scroller = containerRef.current;
+    if (scroller) {
+      scroller.addEventListener("scroll", handleScrollerScroll);
+    }
+
+    return () => {
+      if (scroller) {
+        scroller.removeEventListener("scroll", handleScrollerScroll);
+      }
+    };
+  }, [activeTab]);
+
+  const scrollTo = (id: string) => {
+    setMobileMenuOpen(false);
+    
+    let targetTab = id;
+    if (id === "home" || id === "about") targetTab = "overview";
+    if (id === "infrastructure") targetTab = "labs";
+    if (id === "resources") targetTab = "contact";
+
+    setPrevTab(activeTab);
+    setActiveTab(targetTab);
+
+    setTimeout(() => {
+      if (containerRef.current) {
+        containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }, 50);
+  };
+
   const showMore = () => {
     if (visibleCount === 6) {
       setVisibleCount(galleryData.length);
     } else {
       setVisibleCount(6);
-      document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth" });
+      if (containerRef.current) {
+        containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+      }
     }
   };
 
@@ -328,166 +413,12 @@ function GallerySection() {
     }
   };
 
-  return (
-    <section id="gallery" className="py-24 relative z-10 bg-transparent">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollFloat3D>
-          <div className="text-center mb-16">
-            <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">Visual Insights</span>
-            <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">VRIF <span className="text-gradient-blue">Gallery</span></h2>
-            <p className="text-sm text-slate-500 max-w-md mx-auto mt-4 leading-relaxed">Explore snapshots from our workshops, innovation labs, and ecosystem activities across Karnataka.</p>
-          </div>
-        </ScrollFloat3D>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {galleryData.slice(0, visibleCount).map((img, i) => (
-            <ScrollFloat3D key={i} delay={(i % 3) * 0.05}>
-              <motion.div
-                whileHover={{ y: -6, scale: 1.02 }}
-                className="relative aspect-[4/3] rounded-3xl overflow-hidden border border-slate-100 shadow-md hover:shadow-xl transition-all cursor-pointer group bg-slate-100"
-                onClick={() => setLightboxIndex(i)}
-              >
-                <Image
-                  src={img.src}
-                  alt={`VRIF Gallery Image ${i + 1}`}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                  <span className="text-white text-xs font-bold uppercase tracking-wider">View Photo</span>
-                </div>
-              </motion.div>
-            </ScrollFloat3D>
-          ))}
-        </div>
-
-        {galleryData.length > 6 && (
-          <div className="text-center mt-12">
-            <button
-              onClick={showMore}
-              className="btn-outline px-8 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer mx-auto"
-            >
-              {visibleCount === 6 ? "View More Photos" : "Collapse Gallery"}
-              <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${visibleCount > 6 ? "rotate-90" : ""}`} />
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Lightbox Modal */}
-      <AnimatePresence>
-        {lightboxIndex !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[99999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
-            onClick={() => setLightboxIndex(null)}
-          >
-            {/* Close button */}
-            <button
-              className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
-              onClick={() => setLightboxIndex(null)}
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            {/* Prev button */}
-            <button
-              className="absolute left-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10"
-              onClick={handlePrev}
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-
-            {/* Image Container */}
-            <motion.div
-              initial={{ scale: 0.95, y: 15 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 15 }}
-              className="relative max-w-4xl w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 border border-white/10"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Image
-                src={galleryData[lightboxIndex].src}
-                alt={`VRIF Gallery Image ${lightboxIndex + 1}`}
-                fill
-                className="object-contain"
-                sizes="(max-width: 1024px) 100vw, 1024px"
-                priority
-              />
-              {/* Image indicator count */}
-              <div className="absolute bottom-6 left-6 bg-slate-950/60 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-4 py-2 rounded-full">
-                {lightboxIndex + 1} / {galleryData.length}
-              </div>
-            </motion.div>
-
-            {/* Next button */}
-            <button
-              className="absolute right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10"
-              onClick={handleNext}
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </section>
-  );
-}
-
-export default function Home() {
-  const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
-
-  const { scrollY, scrollYProgress } = useScroll();
-  const heroTextY = useTransform(scrollY, [0, 500], [0, -50]);
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
-
-  const [showBackToTop, setShowBackToTop] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      // Toggle back to top button
-      if (window.scrollY > 500) {
-        setShowBackToTop(true);
-      } else {
-        setShowBackToTop(false);
-      }
-
-      const sections = ["home", "about", "infrastructure", "programs", "team", "gallery", "resources", "contact"];
-      const scrollPosition = window.scrollY + 200;
-      for (const section of sections) {
-        const el = document.getElementById(section);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollTo = (id: string) => {
-    setMobileMenuOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
-
   const navLinks = [
-    { id: "home", label: "Home" },
-    { id: "about", label: "About" },
-    { id: "infrastructure", label: "Labs" },
+    { id: "overview", label: "Overview" },
+    { id: "labs", label: "Labs" },
     { id: "programs", label: "Programs" },
     { id: "team", label: "Team" },
     { id: "gallery", label: "Gallery" },
-    { id: "resources", label: "Resources" },
     { id: "contact", label: "Contact" },
   ];
 
@@ -584,7 +515,7 @@ export default function Home() {
       {/* ═══════════════════ NAVBAR ═══════════════════ */}
       <header className="sticky top-0 z-50 nav-glass">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-28 flex items-center justify-between gap-4">
-          <button onClick={() => scrollTo("home")} className="flex items-center gap-4 cursor-pointer group flex-shrink-0">
+          <button onClick={() => scrollTo("overview")} className="flex items-center gap-4 cursor-pointer group flex-shrink-0">
             <Image src="/images/vrif_logo_cropped.webp" alt="VRIF Logo" width={280} height={80}
               className="object-contain transition-all"
               priority style={{ height: 72, width: "auto" }} />
@@ -595,7 +526,7 @@ export default function Home() {
             {navLinks.map((link) => (
               <button key={link.id} onClick={() => scrollTo(link.id)}
                 className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                  activeSection === link.id
+                  activeTab === link.id
                     ? "bg-blue-600 text-white shadow-md shadow-blue-200"
                     : "text-slate-600 hover:text-blue-600 hover:bg-blue-50"
                 }`}>{link.label}</button>
@@ -628,512 +559,569 @@ export default function Home() {
             {navLinks.map((link) => (
               <button key={link.id} onClick={() => scrollTo(link.id)}
                 className={`py-3 px-4 rounded-xl text-left font-semibold transition-colors ${
-                  activeSection === link.id ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-blue-50"
+                  activeTab === link.id ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-blue-50"
                 }`}>{link.label}</button>
             ))}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ═══════════════════ HERO ═══════════════════ */}
-      <section id="home" className="relative min-h-screen flex items-center overflow-hidden hero-bg z-10">
-        <div className="absolute inset-0 dot-pattern opacity-30" />
+      {/* PORTAL DASHBOARD WRAPPER */}
+      <main className="portal-container z-10">
+        <div className="perspective-container max-w-7xl mx-auto w-full">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={activeTab}
+              custom={direction}
+              variants={tabVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              ref={containerRef}
+              className="portal-content-scroll w-full h-full px-4 sm:px-6 lg:px-8"
+            >
+              {activeTab === "overview" && (
+                <>
+                  {/* ═══════════════════ HERO ═══════════════════ */}
+                  <section id="home" className="relative min-h-[calc(100vh-140px)] flex items-center overflow-hidden hero-bg z-10 pt-8 pb-12">
+                    <div className="absolute inset-0 dot-pattern opacity-30" />
 
-        {/* Gradient orbs */}
-        <motion.div className="absolute top-16 right-20 w-80 h-80 rounded-full pointer-events-none"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-          transition={{ duration: 8, repeat: Infinity }} style={{ background: "radial-gradient(circle, #1a56db 0%, transparent 70%)" }} />
-        <motion.div className="absolute bottom-20 left-10 w-60 h-60 rounded-full pointer-events-none"
-          animate={{ scale: [1, 1.3, 1], opacity: [0.06, 0.12, 0.06] }}
-          transition={{ duration: 10, repeat: Infinity, delay: 2 }} style={{ background: "radial-gradient(circle, #7c3aed 0%, transparent 70%)" }} />
+                    {/* Gradient orbs */}
+                    <motion.div className="absolute top-16 right-20 w-80 h-80 rounded-full pointer-events-none"
+                      animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+                      transition={{ duration: 8, repeat: Infinity }} style={{ background: "radial-gradient(circle, #1a56db 0%, transparent 70%)" }} />
+                    <motion.div className="absolute bottom-20 left-10 w-60 h-60 rounded-full pointer-events-none"
+                      animate={{ scale: [1, 1.3, 1], opacity: [0.06, 0.12, 0.06] }}
+                      transition={{ duration: 10, repeat: Infinity, delay: 2 }} style={{ background: "radial-gradient(circle, #7c3aed 0%, transparent 70%)" }} />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative w-full pt-8 pb-20 md:pt-12 md:pb-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-16 items-center">
+                    <div className="relative w-full">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-16 items-center">
 
-            {/* Left: Text */}
-            <motion.div style={{ y: heroTextY }} className="flex flex-col gap-6">
-              <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase bg-white/80 text-blue-700 shadow-sm backdrop-blur-sm">
-                  <Sparkles className="w-3.5 h-3.5 text-blue-500" />
-                  Innovation & Entrepreneurship Arm of VTU Belagavi
-                </span>
-              </motion.div>
+                        {/* Left: Text */}
+                        <motion.div style={{ y: heroTextY }} className="flex flex-col gap-6">
+                          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase bg-white/80 text-blue-700 shadow-sm backdrop-blur-sm">
+                              <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+                              Innovation & Entrepreneurship Arm of VTU Belagavi
+                            </span>
+                          </motion.div>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
-                <div className="font-rajdhani text-7xl sm:text-8xl xl:text-[10rem] font-black leading-none tracking-tight"
-                  style={{ background: "linear-gradient(135deg, #0d1b3e 0%, #1a56db 50%, #0ea5e9 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                  VRIF
-                </div>
-                <div className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-[0.25em] mt-2">
-                  Visvesvaraya Research & Innovation Foundation
-                </div>
-              </motion.div>
+                          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
+                            <h1 className="font-rajdhani text-7xl sm:text-8xl xl:text-[10rem] font-black leading-none tracking-tight"
+                              style={{ background: "linear-gradient(135deg, #0d1b3e 0%, #1a56db 50%, #0ea5e9 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                              VRIF
+                            </h1>
+                            <div className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-[0.25em] mt-2">
+                              Visvesvaraya Research & Innovation Foundation
+                            </div>
+                          </motion.div>
 
-              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.18 }}
-                className="text-2xl sm:text-3xl lg:text-4xl font-black leading-snug text-slate-800">
-                Transforming Students into<br />
-                <span className="text-gradient-blue">Entrepreneurs & Innovators</span>
-              </motion.h1>
+                          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black leading-snug text-slate-800">
+                            Transforming Students into<br />
+                            <span className="text-gradient-blue">Entrepreneurs & Innovators</span>
+                          </h2>
 
-              <motion.p initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.26 }}
-                className="text-base text-slate-500 leading-relaxed max-w-lg">
-                A statewide innovation movement empowering engineering students to build startups, solve grassroots challenges, and create lasting impact.
-              </motion.p>
+                          <motion.p initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.26 }}
+                            className="text-base text-slate-500 leading-relaxed max-w-lg">
+                            A statewide innovation movement empowering engineering students to build startups, solve grassroots challenges, and create lasting impact.
+                          </motion.p>
 
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.36 }}
-                className="flex flex-wrap gap-4">
-                <button onClick={() => scrollTo("programs")}
-                  className="btn-primary px-7 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer">
-                  Explore Programs <ChevronRight className="w-4 h-4" />
-                </button>
-                <button onClick={() => scrollTo("contact")}
-                  className="btn-outline px-7 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer">
-                  <Mail className="w-4 h-4" /> Contact Us
-                </button>
-              </motion.div>
-            </motion.div>
+                          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.36 }}
+                            className="flex flex-wrap gap-4">
+                            <button onClick={() => scrollTo("programs")}
+                              className="btn-primary px-7 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer">
+                              Explore Programs <ChevronRight className="w-4 h-4" />
+                            </button>
+                            <button onClick={() => scrollTo("contact")}
+                              className="btn-outline px-7 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer">
+                              <Mail className="w-4 h-4" /> Contact Us
+                            </button>
+                          </motion.div>
+                        </motion.div>
 
-            {/* Right: Innovation Scene */}
-            <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1.2, delay: 0.3 }}
-              className="flex items-center justify-center w-full mt-8 lg:mt-0">
-              <HeroAnimation />
-            </motion.div>
-          </div>
-        </div>
-
-        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-blue-400 z-10">
-          <span className="text-[10px] uppercase tracking-widest font-bold">Scroll</span>
-          <div className="w-px h-10 bg-gradient-to-b from-blue-400 to-transparent" />
-        </motion.div>
-      </section>
-
-      {/* ═══════════════════ MARQUEE ═══════════════════ */}
-      <div className="relative overflow-hidden py-4 border-y-2 border-blue-100 bg-white/70 backdrop-blur-[1px] z-10 marquee-fade-mask">
-        <div className="flex gap-0 animate-marquee whitespace-nowrap">
-          {[...marqueeItems, ...marqueeItems].map((item, i) => (
-            <span key={i} className="inline-flex items-center text-xs font-bold text-blue-600 uppercase tracking-widest px-6">
-              <span className="mr-6 text-blue-400 font-bold select-none">•</span>
-              {item}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* ═══════════════════ IMPACT STATS ═══════════════════ */}
-      <section className="py-24 relative z-10" style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(240,244,255,0.4) 100%)", backdropFilter: "blur(1px)" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollFloat3D>
-            <div className="text-center mb-16">
-              <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">Impact at a Glance</span>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Our Numbers <span className="text-gradient-blue">Speak</span></h2>
-            </div>
-          </ScrollFloat3D>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-            {stats.map((stat, i) => {
-              const Icon = stat.icon;
-              return (
-                <ScrollFloat3D key={i} delay={i * 0.06}>
-                  <motion.div whileHover={{ scale: 1.05, y: -6 }}
-                    className="card-3d bg-white rounded-3xl p-7 shadow-md text-center relative overflow-hidden group">
-                    <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: stat.color + "12" }}>
-                      <Icon className="w-6 h-6" style={{ color: stat.color }} />
-                    </div>
-                    <div className="stat-number mb-1" style={{ color: stat.color }}>
-                      <AnimatedCounter value={stat.value} />
-                    </div>
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wide">{stat.label}</div>
-                  </motion.div>
-                </ScrollFloat3D>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <hr className="section-divider" />
-
-      {/* ═══════════════════ ABOUT ═══════════════════ */}
-      <section id="about" className="py-24 bg-transparent relative z-10 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <ScrollFloat3D>
-              <div>
-                <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">About VRIF</span>
-                <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4 mb-6">
-                  Karnataka&apos;s Premier<br /><span className="text-gradient-purple">Innovation Engine</span>
-                </h2>
-                <p className="text-base text-slate-600 leading-relaxed mb-6">
-                  The Visvesvaraya Research & Innovation Foundation (VRIF) is the Innovation & Entrepreneurship Arm of Visvesvaraya Technological University (VTU), Belagavi, registered as a Section 8 Company under the Companies Act 2013.
-                </p>
-                <p className="text-base text-slate-600 leading-relaxed mb-8">
-                  VRIF fosters a culture of innovation, entrepreneurship, and research commercialization across Karnataka&apos;s engineering ecosystem — spanning 210+ VTU-affiliated colleges and over 5,000 students.
-                </p>
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { title: "Startup Incubation", desc: "Full 12-month incubation cycle through TBI Navodaya" },
-                    { title: "Tech Transfer", desc: "IP commercialization and patent licensing support" },
-                    { title: "Industry Connect", desc: "Bridging students with industry mentors" },
-                    { title: "Women Innovation", desc: "Dedicated She Innovates program" },
-                  ].map((item, i) => (
-                    <ScrollFloat3D key={i} delay={i * 0.08}>
-                      <div className="p-4 rounded-2xl bg-blue-50">
-                        <div className="text-sm font-black text-blue-700 mb-1">{item.title}</div>
-                        <div className="text-xs text-slate-500 leading-snug">{item.desc}</div>
+                        {/* Right: Innovation Scene */}
+                        <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 1.2, delay: 0.3 }}
+                          className="flex items-center justify-center w-full mt-8 lg:mt-0">
+                          <HeroAnimation />
+                        </motion.div>
                       </div>
-                    </ScrollFloat3D>
-                  ))}
-                </div>
-              </div>
-            </ScrollFloat3D>
-
-            <ScrollFloat3D delay={0.15}>
-              <div className="flex justify-center">
-                <motion.div
-                  animate={{ rotateY: [0, 5, 0, -5, 0], rotateX: [0, 3, 0, -3, 0] }}
-                  transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-                  style={{ transformStyle: "preserve-3d" }}>
-                  <div className="w-[360px] bg-white rounded-3xl p-8 shadow-2xl shadow-blue-100 relative overflow-hidden">
-                    <div className="w-16 h-16 rounded-2xl mb-6 flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 shadow-xl">
-                      <Shield className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="text-xl font-black text-slate-800 mb-4">Mission & Vision</h3>
-                    <div className="space-y-4">
-                      <div className="p-4 rounded-xl bg-blue-50">
-                        <div className="text-xs font-black text-blue-700 uppercase tracking-wider mb-1">Mission</div>
-                        <p className="text-sm text-slate-600 leading-snug">To catalyze innovation and entrepreneurship by bridging academic research with real-world impact.</p>
-                      </div>
-                      <div className="p-4 rounded-xl bg-purple-50">
-                        <div className="text-xs font-black text-purple-700 uppercase tracking-wider mb-1">Vision</div>
-                        <p className="text-sm text-slate-600 leading-snug">To build Karnataka&apos;s most dynamic startup and innovation ecosystem from VTU&apos;s network of institutions.</p>
-                      </div>
+                  </section>
+
+                  {/* ═══════════════════ MARQUEE ═══════════════════ */}
+                  <div className="relative overflow-hidden py-4 border-y-2 border-blue-100 bg-white/70 backdrop-blur-[1px] z-10 marquee-fade-mask my-8">
+                    <div className="flex gap-0 animate-marquee whitespace-nowrap">
+                      {[...marqueeItems, ...marqueeItems].map((item, i) => (
+                        <span key={i} className="inline-flex items-center text-xs font-bold text-blue-600 uppercase tracking-widest px-6">
+                          <span className="mr-6 text-blue-400 font-bold select-none">•</span>
+                          {item}
+                        </span>
+                      ))}
                     </div>
                   </div>
-                </motion.div>
-              </div>
-            </ScrollFloat3D>
-          </div>
-        </div>
-      </section>
 
-      <hr className="section-divider" />
-
-      {/* ═══════════════════ CoEs ═══════════════════ */}
-      <section id="infrastructure" className="py-24 relative z-10 bg-blue-50/30 backdrop-blur-[1px]">
-        <div className="absolute inset-0 grid-pattern" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <ScrollFloat3D>
-            <div className="text-center mb-16">
-              <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-white border border-blue-200 shadow-sm">Infrastructure</span>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Centres of <span className="text-gradient-blue">Excellence</span></h2>
-              <p className="text-slate-500 mt-4 max-w-2xl mx-auto text-sm leading-relaxed">Six advanced labs equipped with industry-grade tools for prototyping, testing, and innovating.</p>
-            </div>
-          </ScrollFloat3D>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {coes.map((coe, i) => {
-              const Icon = coe.icon;
-              return (
-                <ScrollFloat3D key={i} delay={i * 0.07}>
-                  <motion.div whileHover={{ y: -10 }} className="coe-card rounded-3xl p-7 group h-full">
-                    <div className="w-14 h-14 rounded-2xl mb-5 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                      style={{ background: coe.color + "15" }}>
-                      <Icon className="w-7 h-7" style={{ color: coe.color }} />
+                  {/* ═══════════════════ IMPACT STATS ═══════════════════ */}
+                  <section className="py-16 relative z-10">
+                    <div className="text-center mb-12">
+                      <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">Impact at a Glance</span>
+                      <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Our Numbers <span className="text-gradient-blue">Speak</span></h2>
                     </div>
-                    <h3 className="text-base font-black text-slate-800 mb-3 leading-tight">{coe.title}</h3>
-                    <p className="text-sm text-slate-500 leading-relaxed">{coe.desc}</p>
-                  </motion.div>
-                </ScrollFloat3D>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+                      {stats.map((stat, i) => {
+                        const Icon = stat.icon;
+                        return (
+                          <ScrollFloat3D key={i} delay={i * 0.06}>
+                            <motion.div whileHover={{ scale: 1.05, y: -6 }}
+                              className="card-3d bg-white rounded-3xl p-7 shadow-md text-center relative overflow-hidden group">
+                              <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: stat.color + "12" }}>
+                                <Icon className="w-6 h-6" style={{ color: stat.color }} />
+                              </div>
+                              <div className="stat-number mb-1" style={{ color: stat.color }}>
+                                <AnimatedCounter value={stat.value} />
+                              </div>
+                              <div className="text-xs font-bold text-slate-500 uppercase tracking-wide">{stat.label}</div>
+                            </motion.div>
+                          </ScrollFloat3D>
+                        );
+                      })}
+                    </div>
+                  </section>
 
-      <hr className="section-divider" />
+                  <hr className="section-divider" />
 
-      {/* ═══════════════════ PROGRAMS ═══════════════════ */}
-      <section id="programs" className="py-24 bg-transparent relative z-10 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <ScrollFloat3D>
-            <div className="text-center mb-16">
-              <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">VRIF Ecosystem</span>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Programs & <span className="text-gradient-purple">Initiatives</span></h2>
-              <p className="text-slate-500 mt-4 max-w-2xl mx-auto text-sm">Six flagship programs from ideation to market-ready ventures.</p>
-            </div>
-          </ScrollFloat3D>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {programs.map((program, i) => {
-              const Icon = program.icon;
-              return (
-                <ScrollFloat3D key={i} delay={i * 0.06}>
-                  <motion.div whileHover={{ y: -8 }}
-                    className={`program-card bg-white rounded-3xl p-7 border border-slate-100 shadow-md hover:shadow-xl transition-all relative overflow-hidden group cursor-pointer h-full ${program.glowClass}`}
-                    onClick={() => setSelectedProgram(program.id)}>
-                    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl" style={{ background: program.color }} />
-                    <div className="flex items-start justify-between mb-5">
-                      <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: program.bg }}>
-                        <Icon className="w-6 h-6" style={{ color: program.color }} />
+                  {/* ═══════════════════ ABOUT ═══════════════════ */}
+                  <section id="about" className="py-16 bg-transparent relative z-10 overflow-hidden">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                      <ScrollFloat3D>
+                        <div>
+                          <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">About VRIF</span>
+                          <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4 mb-6">
+                            Karnataka&apos;s Premier<br /><span className="text-gradient-purple">Innovation Engine</span>
+                          </h2>
+                          <p className="text-base text-slate-600 leading-relaxed mb-6">
+                            The Visvesvaraya Research & Innovation Foundation (VRIF) is the Innovation & Entrepreneurship Arm of Visvesvaraya Technological University (VTU), Belagavi, registered as a Section 8 Company under the Companies Act 2013.
+                          </p>
+                          <p className="text-base text-slate-600 leading-relaxed mb-8">
+                            VRIF fosters a culture of innovation, entrepreneurship, and research commercialization across Karnataka&apos;s engineering ecosystem — spanning 210+ VTU-affiliated colleges and over 5,000 students.
+                          </p>
+                          <div className="grid grid-cols-2 gap-4">
+                            {[
+                              { title: "Startup Incubation", desc: "Full 12-month incubation cycle through TBI Navodaya" },
+                              { title: "Tech Transfer", desc: "IP commercialization and patent licensing support" },
+                              { title: "Industry Connect", desc: "Bridging students with industry mentors" },
+                              { title: "Women Innovation", desc: "Dedicated She Innovates program" },
+                            ].map((item, i) => (
+                              <ScrollFloat3D key={i} delay={i * 0.08}>
+                                <div className="p-4 rounded-2xl bg-blue-50 h-full flex flex-col justify-between">
+                                  <div className="text-sm font-black text-blue-700 mb-1">{item.title}</div>
+                                  <div className="text-xs text-slate-500 leading-snug">{item.desc}</div>
+                                </div>
+                              </ScrollFloat3D>
+                            ))}
+                          </div>
+                        </div>
+                      </ScrollFloat3D>
+
+                      <ScrollFloat3D delay={0.15}>
+                        <div className="flex justify-center">
+                          <motion.div
+                            animate={{ rotateY: [0, 5, 0, -5, 0], rotateX: [0, 3, 0, -3, 0] }}
+                            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                            style={{ transformStyle: "preserve-3d" }}>
+                            <div className="w-[360px] bg-white rounded-3xl p-8 shadow-2xl shadow-blue-100 relative overflow-hidden">
+                              <div className="w-16 h-16 rounded-2xl mb-6 flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 shadow-xl">
+                                <Shield className="w-8 h-8 text-white" />
+                              </div>
+                              <h3 className="text-xl font-black text-slate-800 mb-4">Mission & Vision</h3>
+                              <div className="space-y-4">
+                                <div className="p-4 rounded-xl bg-blue-50">
+                                  <div className="text-xs font-black text-blue-700 uppercase tracking-wider mb-1">Mission</div>
+                                  <p className="text-sm text-slate-600 leading-snug">To catalyze innovation and entrepreneurship by bridging academic research with real-world impact.</p>
+                                </div>
+                                <div className="p-4 rounded-xl bg-purple-50">
+                                  <div className="text-xs font-black text-purple-700 uppercase tracking-wider mb-1">Vision</div>
+                                  <p className="text-sm text-slate-600 leading-snug">To build Karnataka&apos;s most dynamic startup and innovation ecosystem from VTU&apos;s network of institutions.</p>
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        </div>
+                      </ScrollFloat3D>
+                    </div>
+                  </section>
+                </>
+              )}
+
+              {activeTab === "labs" && (
+                <section id="infrastructure" className="py-16 relative z-10">
+                  <div className="absolute inset-0 grid-pattern pointer-events-none opacity-40" />
+                  <ScrollFloat3D>
+                    <div className="text-center mb-16">
+                      <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-white border border-blue-200 shadow-sm">Infrastructure</span>
+                      <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Centres of <span className="text-gradient-blue">Excellence</span></h2>
+                      <p className="text-slate-500 mt-4 max-w-2xl mx-auto text-sm leading-relaxed">Six advanced labs equipped with industry-grade tools for prototyping, testing, and innovating.</p>
+                    </div>
+                  </ScrollFloat3D>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {coes.map((coe, i) => {
+                      const Icon = coe.icon;
+                      return (
+                        <ScrollFloat3D key={i} delay={i * 0.07}>
+                          <motion.div whileHover={{ y: -10 }} className="coe-card rounded-3xl p-7 group h-full hover-glow-blue">
+                            <div className="w-14 h-14 rounded-2xl mb-5 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                              style={{ background: coe.color + "15" }}>
+                              <Icon className="w-7 h-7" style={{ color: coe.color }} />
+                            </div>
+                            <h3 className="text-base font-black text-slate-800 mb-3 leading-tight">{coe.title}</h3>
+                            <p className="text-sm text-slate-500 leading-relaxed">{coe.desc}</p>
+                          </motion.div>
+                        </ScrollFloat3D>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
+              {activeTab === "programs" && (
+                <section id="programs" className="py-16 bg-transparent relative z-10 overflow-hidden">
+                  <ScrollFloat3D>
+                    <div className="text-center mb-16">
+                      <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">VRIF Ecosystem</span>
+                      <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Programs & <span className="text-gradient-purple">Initiatives</span></h2>
+                      <p className="text-slate-500 mt-4 max-w-2xl mx-auto text-sm">Six flagship programs from ideation to market-ready ventures.</p>
+                    </div>
+                  </ScrollFloat3D>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {programs.map((program, i) => {
+                      const Icon = program.icon;
+                      return (
+                        <ScrollFloat3D key={i} delay={i * 0.06}>
+                          <motion.div whileHover={{ y: -8 }}
+                            className={`program-card bg-white rounded-3xl p-7 border border-slate-100 shadow-md hover:shadow-xl transition-all relative overflow-hidden group cursor-pointer h-full ${program.glowClass}`}
+                            onClick={() => setSelectedProgram(program.id)}>
+                            <div className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl" style={{ background: program.color }} />
+                            <div className="flex items-start justify-between mb-5">
+                              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: program.bg }}>
+                                <Icon className="w-6 h-6" style={{ color: program.color }} />
+                              </div>
+                            </div>
+                            <h3 className="text-base font-black text-slate-800 mb-2">{program.name}</h3>
+                            <p className="text-sm text-slate-500 leading-relaxed mb-4">{program.tagline}</p>
+                            <div className="flex items-center gap-2 text-sm font-bold opacity-0 group-hover:opacity-100 transition-all mt-auto" style={{ color: program.color }}>
+                              <span>Learn More</span><ArrowRight className="w-4 h-4" />
+                            </div>
+                          </motion.div>
+                        </ScrollFloat3D>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
+              {activeTab === "team" && (
+                <section id="team" className="py-16 relative z-10">
+                  <ScrollFloat3D>
+                    <div className="text-center mb-16">
+                      <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-white border border-blue-200 shadow-sm">Leadership</span>
+                      <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Leadership & <span className="text-gradient-blue">Team</span></h2>
+                    </div>
+                  </ScrollFloat3D>
+
+                  {/* Directors */}
+                  <div className="mb-14">
+                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 text-center">Board of Directors</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+                      {directors.map((d, i) => (
+                        <ScrollFloat3D key={i} delay={i * 0.1}>
+                          <motion.div whileHover={{ y: -6 }} className="team-card rounded-3xl p-6 text-center hover-glow-blue">
+                            <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden bg-blue-50 relative">
+                              <Image src={d.img} alt={d.name} fill className="object-cover" sizes="80px" />
+                            </div>
+                            <h4 className="text-base font-black text-slate-800 leading-snug">{d.name}</h4>
+                            <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-wider">{d.role}</p>
+                          </motion.div>
+                        </ScrollFloat3D>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Team Members */}
+                  <div className="mb-16">
+                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 text-center">Execution Team</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                      {tbiTeam.map((member, i) => (
+                        <ScrollFloat3D key={i} delay={i * 0.06}>
+                          <motion.div whileHover={{ y: -6 }} className="team-card rounded-3xl p-5 text-center hover-glow-purple">
+                            <div className="w-16 h-16 rounded-full mx-auto mb-3 overflow-hidden bg-purple-50 relative">
+                              <Image src={member.img} alt={member.name} fill className="object-cover" sizes="64px" />
+                            </div>
+                            <h4 className="text-sm font-bold text-slate-800 leading-tight">{member.name}</h4>
+                            <p className="text-[10px] text-slate-400 font-semibold mt-1 uppercase tracking-wider leading-snug min-h-[32px]">{member.role}</p>
+                            <a href={member.linkedin} target="_blank" rel="noopener noreferrer"
+                              className="mt-3.5 inline-flex items-center justify-center p-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all mx-auto cursor-pointer"
+                              aria-label={`${member.name} LinkedIn`}>
+                              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" /></svg>
+                            </a>
+                          </motion.div>
+                        </ScrollFloat3D>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Partners */}
+                  <div>
+                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 text-center">Ecosystem Partners</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                      {partners.map((p, i) => (
+                        <ScrollFloat3D key={i} delay={i * 0.08}>
+                          <motion.div whileHover={{ y: -8, scale: 1.03 }}
+                            className="partner-box p-6 rounded-3xl flex flex-col items-center text-center gap-4 h-full hover-glow-blue bg-white/70">
+                            <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Partner</span>
+                            <div className="h-14 flex items-center justify-center w-full">
+                              <Image src={p.src} alt={p.name} width={90} height={48} className="object-contain" style={{ maxHeight: 48, width: "auto", height: "auto" }} />
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-bold text-slate-700">{p.name}</h4>
+                              <p className="text-[10px] text-slate-400 uppercase tracking-widest">{p.label}</p>
+                            </div>
+                          </motion.div>
+                        </ScrollFloat3D>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {activeTab === "gallery" && (
+                <section id="gallery" className="py-16 relative z-10 bg-transparent">
+                  <ScrollFloat3D>
+                    <div className="text-center mb-16">
+                      <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">Visual Insights</span>
+                      <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">VRIF <span className="text-gradient-blue">Gallery</span></h2>
+                      <p className="text-sm text-slate-500 max-w-md mx-auto mt-4 leading-relaxed">Explore snapshots from our workshops, innovation labs, and ecosystem activities across Karnataka.</p>
+                    </div>
+                  </ScrollFloat3D>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {galleryData.slice(0, visibleCount).map((img, i) => (
+                      <ScrollFloat3D key={i} delay={(i % 3) * 0.05}>
+                        <motion.div
+                          whileHover={{ y: -6, scale: 1.02 }}
+                          className="relative aspect-[4/3] rounded-3xl overflow-hidden border border-slate-100 shadow-md hover:shadow-xl transition-all cursor-pointer group bg-slate-100 hover-glow-blue"
+                          onClick={() => setLightboxIndex(i)}
+                        >
+                          <Image
+                            src={img.src}
+                            alt={`VRIF Gallery Image ${i + 1}`}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                            <span className="text-white text-xs font-bold uppercase tracking-wider">View Photo</span>
+                          </div>
+                        </motion.div>
+                      </ScrollFloat3D>
+                    ))}
+                  </div>
+
+                  {galleryData.length > 6 && (
+                    <div className="text-center mt-12">
+                      <button
+                        onClick={showMore}
+                        className="btn-outline px-8 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer mx-auto"
+                      >
+                        {visibleCount === 6 ? "View More Photos" : "Collapse Gallery"}
+                        <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${visibleCount > 6 ? "rotate-90" : ""}`} />
+                      </button>
+                    </div>
+                  )}
+                </section>
+              )}
+
+              {activeTab === "contact" && (
+                <>
+                  {/* ═══════════════════ RESOURCES ═══════════════════ */}
+                  <section id="resources" className="py-16 relative z-10">
+                    <div className="text-center mb-12">
+                      <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-white border border-blue-200 shadow-sm">Resources</span>
+                      <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Resource <span className="text-gradient-blue">Centre</span></h2>
+                    </div>
+                    <div className="max-w-xl mx-auto">
+                      <motion.div whileHover={{ y: -6 }}
+                        className="bg-white rounded-3xl p-8 shadow-xl shadow-blue-50 flex flex-col items-center text-center gap-6 border border-slate-100 hover-glow-blue">
+                        <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg">
+                          <Download className="w-8 h-8 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-black text-slate-800 mb-2">VRIF Brochure</h3>
+                          <p className="text-sm text-slate-500 leading-relaxed">Official brochure — programs, infrastructure, team, and impact across Karnataka.</p>
+                        </div>
+                        <a href="/VTU_VRIF_Brochure.pdf" download
+                          className="btn-primary px-8 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer">
+                          <Download className="w-4 h-4" /> Download PDF
+                        </a>
+                      </motion.div>
+                    </div>
+                  </section>
+
+                  <hr className="section-divider" />
+
+                  {/* ═══════════════════ SUBSCRIBE ═══════════════════ */}
+                  <section className="py-16 bg-transparent relative z-10">
+                    <div className="text-center mb-10">
+                      <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">Innovation Calendar</span>
+                      <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Events & <span className="text-gradient-purple">Programs</span></h2>
+                    </div>
+                    <SubscribeCard />
+                  </section>
+
+                  <hr className="section-divider" />
+
+                  {/* ═══════════════════ CONTACT ═══════════════════ */}
+                  <section id="contact" className="py-16 relative z-10">
+                    <div className="text-center mb-14">
+                      <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-white border border-blue-200 shadow-sm">Get In Touch</span>
+                      <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Contact <span className="text-gradient-blue">VRIF</span></h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                      {[
+                        { icon: MapPin, title: "Office Address", content: "Silver Jubilee Bhavan, VTU Campus,\nJnana Sangama, Machhe,\nBelagavi – 590018,\nKarnataka, India", color: "#1a56db", action: null, glowClass: "hover-glow-blue" },
+                        { icon: Mail, title: "General Enquiries", content: "ops@vtuvrif.com", color: "#7c3aed", action: "mailto:ops@vtuvrif.com", glowClass: "hover-glow-purple" },
+                        { icon: Phone, title: "Phone", content: "+91 97394 44818\nMon–Fri, 9 AM – 6 PM IST", color: "#10b981", action: "tel:9739444818", glowClass: "hover-glow-green" },
+                      ].map((card, i) => {
+                        const Icon = card.icon;
+                        return (
+                          <ScrollFloat3D key={i} delay={i * 0.1}>
+                            <motion.div whileHover={{ y: -8 }}
+                              className={`bg-white rounded-3xl p-8 shadow-lg text-center flex flex-col items-center gap-5 border border-slate-100 ${card.glowClass}`}>
+                              <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-md" style={{ background: card.color }}>
+                                <Icon className="w-7 h-7 text-white" />
+                              </div>
+                              <div>
+                                <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">{card.title}</div>
+                                {card.action ? (
+                                  <a href={card.action} className="text-base font-black hover:underline whitespace-pre-line" style={{ color: card.color }}>{card.content}</a>
+                                ) : (
+                                  <p className="text-sm text-slate-600 whitespace-pre-line leading-relaxed">{card.content}</p>
+                                )}
+                              </div>
+                            </motion.div>
+                          </ScrollFloat3D>
+                        );
+                      })}
+                    </div>
+                  </section>
+
+                  {/* ═══════════════════ FOOTER ═══════════════════ */}
+                  <footer className="bg-white/60 backdrop-blur-[2px] border-t border-blue-100 pt-14 pb-8 relative z-10 mt-12 rounded-3xl">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12 px-6">
+                      <div className="md:col-span-5 flex flex-col gap-5">
+                        <button onClick={() => scrollTo("overview")} className="flex items-center gap-4 cursor-pointer w-fit group">
+                          <Image src="/images/vrif_logo_cropped.webp" alt="VRIF Logo" width={280} height={80}
+                            className="object-contain" style={{ height: 72, width: "auto" }} />
+                        </button>
+                        <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
+                          Visvesvaraya Research & Innovation Foundation (VRIF) — the innovation and entrepreneurship arm of VTU, Belagavi.
+                        </p>
+                        <div className="flex items-center gap-3">
+                          {socialLinks.map((s, i) => (
+                            <a key={i} href={s.href} target="_blank" rel="noopener noreferrer"
+                              className="p-2.5 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white transition-all"
+                              aria-label={s.label}>
+                              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d={s.path} /></svg>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="md:col-span-3 flex flex-col gap-4">
+                        <h4 className="text-xs font-black tracking-widest text-slate-400 uppercase">Quick Links</h4>
+                        <div className="flex flex-col gap-2.5">
+                          {navLinks.map((link) => (
+                            <button key={link.id} onClick={() => scrollTo(link.id)}
+                              className="text-slate-500 hover:text-blue-600 text-sm font-semibold text-left transition-colors">{link.label}</button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="md:col-span-4 flex flex-col gap-4">
+                        <h4 className="text-xs font-black tracking-widest text-slate-400 uppercase">Office Location</h4>
+                        <p className="text-slate-500 text-sm leading-relaxed">
+                          Silver Jubilee Bhavan, VTU Campus,<br />
+                          Jnana Sangama, Machhe,<br />
+                          Belagavi – 590018, Karnataka, India
+                        </p>
                       </div>
                     </div>
-                    <h3 className="text-base font-black text-slate-800 mb-2">{program.name}</h3>
-                    <p className="text-sm text-slate-500 leading-relaxed mb-4">{program.tagline}</p>
-                    <div className="flex items-center gap-2 text-sm font-bold opacity-0 group-hover:opacity-100 transition-all" style={{ color: program.color }}>
-                      <span>Learn More</span><ArrowRight className="w-4 h-4" />
+                    <div className="border-t border-blue-50 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 px-6">
+                      <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                        © {new Date().getFullYear()} Visvesvaraya Research & Innovation Foundation. All Rights Reserved.
+                      </div>
+                      <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                        Innovation Arm of VTU Belagavi
+                      </div>
                     </div>
-                  </motion.div>
-                </ScrollFloat3D>
-              );
-            })}
-          </div>
+                  </footer>
+                </>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </section>
+      </main>
 
+      {/* Program Details Modal */}
       <ProgramDetailsModal programId={selectedProgram} onClose={() => setSelectedProgram(null)} />
 
-      <hr className="section-divider" />
-
-      {/* ═══════════════════ TEAM ═══════════════════ */}
-      <section id="team" className="py-24 relative z-10 bg-blue-50/30 backdrop-blur-[1px]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollFloat3D>
-            <div className="text-center mb-16">
-              <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-white border border-blue-200 shadow-sm">Leadership</span>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Leadership & <span className="text-gradient-blue">Team</span></h2>
-            </div>
-          </ScrollFloat3D>
-
-          {/* Directors */}
-          <div className="mb-14">
-            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 text-center">Board of Directors</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
-              {directors.map((d, i) => (
-                <ScrollFloat3D key={i} delay={i * 0.1}>
-                  <motion.div whileHover={{ y: -6 }} className="team-card rounded-3xl p-6 text-center">
-                    <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden bg-blue-50 relative">
-                      <Image src={d.img} alt={d.name} fill className="object-cover" sizes="80px" />
-                    </div>
-                    <h4 className="text-sm font-black text-slate-800 leading-tight mb-1">{d.name}</h4>
-                    <p className="text-xs text-slate-500 leading-snug">{d.role}</p>
-                  </motion.div>
-                </ScrollFloat3D>
-              ))}
-            </div>
-          </div>
-
-          {/* TBI Team */}
-          <div>
-            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 text-center">TBI Team</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-              {tbiTeam.map((member, i) => (
-                <ScrollFloat3D key={i} delay={i * 0.04}>
-                  <motion.div whileHover={{ y: -6 }} className="team-card rounded-2xl p-5 text-center">
-                    <div className="w-16 h-16 rounded-full mx-auto mb-3 overflow-hidden bg-blue-50 relative">
-                      <Image src={member.img} alt={member.name} fill className="object-cover" sizes="64px" />
-                    </div>
-                    <h4 className="text-xs font-black text-slate-800 leading-tight mb-1">{member.name}</h4>
-                    <p className="text-[10px] text-slate-500 leading-snug mb-3">{member.role}</p>
-                    <a href={member.linkedin} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-800 transition-colors hover:underline">
-                      <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                      LinkedIn
-                    </a>
-                  </motion.div>
-                </ScrollFloat3D>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <hr className="section-divider" />
-
-      {/* ═══════════════════ PARTNERS ═══════════════════ */}
-      <section className="py-20 bg-transparent relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollFloat3D>
-            <div className="text-center mb-12">
-              <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">Ecosystem Stakeholders</span>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Our Patron & <span className="text-gradient-blue">Partners</span></h2>
-            </div>
-          </ScrollFloat3D>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-            <ScrollFloat3D>
-              <motion.div whileHover={{ y: -8, scale: 1.04 }}
-                className="p-7 rounded-3xl flex flex-col items-center text-center gap-4 bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-2xl shadow-blue-200 animate-glow-pulse">
-                <span className="text-[10px] font-black tracking-widest uppercase bg-white/20 px-3 py-1 rounded-full">★ Patron</span>
-                <Image src="/images/vtu_logo.webp" alt="VTU Logo" width={56} height={56} className="object-contain" />
-                <div>
-                  <h4 className="text-sm font-black">VTU Belagavi</h4>
-                  <p className="text-[10px] text-blue-200 uppercase tracking-widest font-bold mt-0.5">Patron University</p>
-                </div>
-              </motion.div>
-            </ScrollFloat3D>
-            {partners.map((p, i) => (
-              <ScrollFloat3D key={i} delay={i * 0.08}>
-                <motion.div whileHover={{ y: -8, scale: 1.03 }}
-                  className="partner-box p-6 rounded-3xl flex flex-col items-center text-center gap-4 h-full">
-                  <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Partner</span>
-                  <div className="h-14 flex items-center justify-center w-full">
-                    <Image src={p.src} alt={p.name} width={90} height={48} className="object-contain" style={{ maxHeight: 48, width: "auto", height: "auto" }} />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-700">{p.name}</h4>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">{p.label}</p>
-                  </div>
-                </motion.div>
-              </ScrollFloat3D>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <hr className="section-divider" />
-
-      {/* ═══════════════════ GALLERY ═══════════════════ */}
-      <GallerySection />
-
-      <hr className="section-divider" />
-
-      {/* ═══════════════════ RESOURCES ═══════════════════ */}
-      <section id="resources" className="py-20 relative z-10 bg-blue-50/30 backdrop-blur-[1px]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollFloat3D>
-            <div className="text-center mb-12">
-              <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-white border border-blue-200 shadow-sm">Resources</span>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Resource <span className="text-gradient-blue">Centre</span></h2>
-            </div>
-          </ScrollFloat3D>
-          <ScrollFloat3D delay={0.1}>
-            <div className="max-w-xl mx-auto">
-              <motion.div whileHover={{ y: -6 }}
-                className="bg-white rounded-3xl p-8 shadow-xl shadow-blue-50 flex flex-col items-center text-center gap-6">
-                <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg">
-                  <Download className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-black text-slate-800 mb-2">VRIF Brochure</h3>
-                  <p className="text-sm text-slate-500 leading-relaxed">Official brochure — programs, infrastructure, team, and impact across Karnataka.</p>
-                </div>
-                <a href="/VTU_VRIF_Brochure.pdf" download
-                  className="btn-primary px-8 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer">
-                  <Download className="w-4 h-4" /> Download PDF
-                </a>
-              </motion.div>
-            </div>
-          </ScrollFloat3D>
-        </div>
-      </section>
-
-      <hr className="section-divider" />
-
-      {/* ═══════════════════ EVENTS — NEWSLETTER SUBSCRIBE ═══════════════════ */}
-      <section className="py-20 bg-transparent relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollFloat3D>
-            <div className="text-center mb-10">
-              <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">Innovation Calendar</span>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Events & <span className="text-gradient-purple">Programs</span></h2>
-            </div>
-          </ScrollFloat3D>
-          <ScrollFloat3D delay={0.1}>
-            <SubscribeCard />
-          </ScrollFloat3D>
-        </div>
-      </section>
-
-      <hr className="section-divider" />
-
-      {/* ═══════════════════ CONTACT ═══════════════════ */}
-      <section id="contact" className="py-20 relative z-10 bg-blue-50/30 backdrop-blur-[1px]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollFloat3D>
-            <div className="text-center mb-14">
-              <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-white border border-blue-200 shadow-sm">Get In Touch</span>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Contact <span className="text-gradient-blue">VRIF</span></h2>
-            </div>
-          </ScrollFloat3D>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {[
-              { icon: MapPin, title: "Office Address", content: "Silver Jubilee Bhavan, VTU Campus,\nJnana Sangama, Machhe,\nBelagavi – 590018,\nKarnataka, India", color: "#1a56db", action: null },
-              { icon: Mail, title: "General Enquiries", content: "ops@vtuvrif.com", color: "#7c3aed", action: "mailto:ops@vtuvrif.com" },
-              { icon: Phone, title: "Phone", content: "+91 97394 44818\nMon–Fri, 9 AM – 6 PM IST", color: "#10b981", action: "tel:9739444818" },
-            ].map((card, i) => {
-              const Icon = card.icon;
-              return (
-                <ScrollFloat3D key={i} delay={i * 0.1}>
-                  <motion.div whileHover={{ y: -8 }}
-                    className="bg-white rounded-3xl p-8 shadow-lg text-center flex flex-col items-center gap-5">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-md" style={{ background: card.color }}>
-                      <Icon className="w-7 h-7 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">{card.title}</div>
-                      {card.action ? (
-                        <a href={card.action} className="text-base font-black hover:underline whitespace-pre-line" style={{ color: card.color }}>{card.content}</a>
-                      ) : (
-                        <p className="text-sm text-slate-600 whitespace-pre-line leading-relaxed">{card.content}</p>
-                      )}
-                    </div>
-                  </motion.div>
-                </ScrollFloat3D>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════ FOOTER ═══════════════════ */}
-      <footer className="bg-white/60 backdrop-blur-[2px] border-t border-blue-100 pt-14 pb-8 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
-            <div className="md:col-span-5 flex flex-col gap-5">
-              {/* Footer logos — NO borders, clean images, large */}
-              <button onClick={() => scrollTo("home")} className="flex items-center gap-4 cursor-pointer w-fit group">
-                <Image src="/images/vrif_logo_cropped.webp" alt="VRIF Logo" width={280} height={80}
-                  className="object-contain" style={{ height: 72, width: "auto" }} />
-              </button>
-              <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
-                Visvesvaraya Research & Innovation Foundation (VRIF) — the innovation and entrepreneurship arm of VTU, Belagavi.
-              </p>
-              <div className="flex items-center gap-3">
-                {socialLinks.map((s, i) => (
-                  <a key={i} href={s.href} target="_blank" rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white transition-all"
-                    aria-label={s.label}>
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d={s.path} /></svg>
-                  </a>
-                ))}
+      {/* Lightbox Modal for Gallery */}
+      <AnimatePresence>
+        {lightboxIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[99999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
+            onClick={() => setLightboxIndex(null)}
+          >
+            <button
+              className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
+              onClick={() => setLightboxIndex(null)}
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <button
+              className="absolute left-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10"
+              onClick={handlePrev}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              className="relative max-w-4xl w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 border border-white/10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={galleryData[lightboxIndex].src}
+                alt={`VRIF Gallery Image ${lightboxIndex + 1}`}
+                fill
+                className="object-contain"
+                sizes="(max-width: 1024px) 100vw, 1024px"
+                priority
+              />
+              <div className="absolute bottom-6 left-6 bg-slate-950/60 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-4 py-2 rounded-full">
+                {lightboxIndex + 1} / {galleryData.length}
               </div>
-            </div>
-            <div className="md:col-span-3 flex flex-col gap-4">
-              <h4 className="text-xs font-black tracking-widest text-slate-400 uppercase">Quick Links</h4>
-              <div className="flex flex-col gap-2.5">
-                {navLinks.map((link) => (
-                  <button key={link.id} onClick={() => scrollTo(link.id)}
-                    className="text-slate-500 hover:text-blue-600 text-sm font-semibold text-left transition-colors">{link.label}</button>
-                ))}
-              </div>
-            </div>
-            <div className="md:col-span-4 flex flex-col gap-4">
-              <h4 className="text-xs font-black tracking-widest text-slate-400 uppercase">Office Location</h4>
-              <p className="text-slate-500 text-sm leading-relaxed">
-                Silver Jubilee Bhavan, VTU Campus,<br />
-                Jnana Sangama, Machhe,<br />
-                Belagavi – 590018, Karnataka, India
-              </p>
-            </div>
-          </div>
-          <div className="border-t border-blue-50 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-              © {new Date().getFullYear()} Visvesvaraya Research & Innovation Foundation. All Rights Reserved.
-            </div>
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-              Innovation Arm of VTU Belagavi
-            </div>
-          </div>
-        </div>
-      </footer>
+            </motion.div>
+            <button
+              className="absolute right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10"
+              onClick={handleNext}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Floating Back to Top Button */}
       <AnimatePresence>
@@ -1144,7 +1132,13 @@ export default function Home() {
             exit={{ opacity: 0, scale: 0.5, y: 30 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            onClick={() => {
+              if (containerRef.current) {
+                containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+              } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }}
             className="fixed bottom-8 right-8 z-50 p-4 rounded-2xl bg-white/80 hover:bg-blue-600 text-blue-600 hover:text-white border border-blue-100 shadow-xl backdrop-blur-md cursor-pointer transition-colors duration-200"
             aria-label="Back to top"
           >
