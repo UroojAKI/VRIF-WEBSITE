@@ -366,3 +366,74 @@ header, section, footer, .relative.z-10 { position: relative; z-index: 1; }
   0% { transform: translate(-50%, -50%) rotateX(60deg) rotate(360deg) translateX(60px) rotate(-360deg); }
   100% { transform: translate(-50%, -50%) rotateX(60deg) rotate(0deg) translateX(60px) rotate(0deg); }
 }
+
+/* ---- PREMIUM UPGRADES ---- */
+
+/* Fade edges for marquees */
+.marquee-fade-mask {
+  mask-image: linear-gradient(to right, transparent, white 15%, white 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, white 15%, white 85%, transparent);
+}
+
+/* SVG stroke-dashflow animation */
+@keyframes stroke-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+.animate-stroke-flow {
+  animation: stroke-flow 1.5s linear infinite;
+}
+
+/* Premium Card hover glow shadows */
+.hover-glow-gold {
+  transition: all 0.3s ease-in-out;
+}
+.hover-glow-gold:hover {
+  box-shadow: 0 15px 35px rgba(245, 158, 11, 0.22), 0 5px 15px rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.4) !important;
+}
+
+.hover-glow-blue {
+  transition: all 0.3s ease-in-out;
+}
+.hover-glow-blue:hover {
+  box-shadow: 0 15px 35px rgba(26, 86, 219, 0.22), 0 5px 15px rgba(26, 86, 219, 0.08);
+  border-color: rgba(26, 86, 219, 0.4) !important;
+}
+
+.hover-glow-purple {
+  transition: all 0.3s ease-in-out;
+}
+.hover-glow-purple:hover {
+  box-shadow: 0 15px 35px rgba(124, 58, 237, 0.22), 0 5px 15px rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.4) !important;
+}
+
+.hover-glow-green {
+  transition: all 0.3s ease-in-out;
+}
+.hover-glow-green:hover {
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.22), 0 5px 15px rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+.hover-glow-indigo {
+  transition: all 0.3s ease-in-out;
+}
+.hover-glow-indigo:hover {
+  box-shadow: 0 15px 35px rgba(99, 102, 241, 0.22), 0 5px 15px rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.4) !important;
+}
+
+/* Scroll Progress indicator dynamic animation */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #1a56db 0%, #7c3aed 50%, #0ea5e9 100%);
+  transform-origin: 0%;
+  z-index: 99999;
+}

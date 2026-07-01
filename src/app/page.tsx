@@ -6,7 +6,7 @@ import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView 
 import {
   Building2, GraduationCap, Users, Cpu, Lightbulb, UserCheck, Rocket,
   ChevronRight, ChevronLeft, Download, Mail, Phone, MapPin, Menu, X, Award, Compass, Zap,
-  Target, Briefcase, Layers, Sparkles, ArrowRight, Globe, Shield, TrendingUp,
+  Target, Briefcase, Layers, Sparkles, ArrowRight, ArrowUp, Globe, Shield, TrendingUp,
   BookOpen, Star, FlaskConical, Microscope, CircuitBoard, Network
 } from "lucide-react";
 
@@ -181,9 +181,9 @@ function HeroAnimation() {
           rotate: [12, 8, 12]
         }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute right-[8%] top-[8%] z-20 flex flex-col items-center gap-1.5"
+        className="absolute right-[8%] top-[8%] z-20 flex flex-col items-center gap-1.5 cursor-pointer"
       >
-        <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-200">
+        <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-200 transition-all hover:scale-105 hover-glow-blue">
           <svg viewBox="0 0 24 24" fill="none" className="w-12 h-12 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]">
             <path d="M12 2C12 2 9 6 9 12C9 15.5 10.5 18 12 19C13.5 18 15 15.5 15 12C15 6 12 2 12 2Z" fill="white" />
             <path d="M9 14L5 18V19H8L9 17" fill="#7c3aed" />
@@ -201,9 +201,9 @@ function HeroAnimation() {
           x: [5, -5, 5]
         }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute left-[6%] top-[22%] z-20 flex flex-col items-center gap-1.5"
+        className="absolute left-[6%] top-[22%] z-20 flex flex-col items-center gap-1.5 cursor-pointer"
       >
-        <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-white flex items-center justify-center shadow-md border border-slate-100">
+        <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-white flex items-center justify-center shadow-md border border-slate-100 transition-all hover:scale-105 hover-glow-gold">
           <Lightbulb className="w-10 h-10 text-amber-500" />
         </div>
         <span className="text-[10px] font-black text-slate-500 bg-white border border-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">Ideate</span>
@@ -216,9 +216,9 @@ function HeroAnimation() {
           x: [-4, 4, -4]
         }}
         transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute left-[15%] bottom-[10%] z-20 flex flex-col items-center gap-1.5"
+        className="absolute left-[15%] bottom-[10%] z-20 flex flex-col items-center gap-1.5 cursor-pointer"
       >
-        <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-white flex items-center justify-center shadow-md border border-slate-100">
+        <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-white flex items-center justify-center shadow-md border border-slate-100 transition-all hover:scale-105 hover-glow-green">
           <TrendingUp className="w-10 h-10 text-emerald-500" />
         </div>
         <span className="text-[10px] font-black text-slate-500 bg-white border border-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">Scale</span>
@@ -231,9 +231,9 @@ function HeroAnimation() {
           x: [4, -4, -4]
         }}
         transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-        className="absolute right-[8%] bottom-[18%] z-20 flex flex-col items-center gap-1.5"
+        className="absolute right-[8%] bottom-[18%] z-20 flex flex-col items-center gap-1.5 cursor-pointer"
       >
-        <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-white flex items-center justify-center shadow-md border border-slate-100">
+        <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-white flex items-center justify-center shadow-md border border-slate-100 transition-all hover:scale-105 hover-glow-indigo">
           <Network className="w-10 h-10 text-indigo-500" />
         </div>
         <span className="text-[10px] font-black text-slate-500 bg-white border border-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">Connect</span>
@@ -241,10 +241,10 @@ function HeroAnimation() {
 
       {/* Animated Connective Lines */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 400 400">
-        <motion.line x1="80" y1="110" x2="200" y2="200" stroke="#cbd5e1" strokeWidth="1" strokeDasharray="4,4" />
-        <motion.line x1="320" y1="80" x2="200" y2="200" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4,4" />
-        <motion.line x1="100" y1="320" x2="200" y2="200" stroke="#cbd5e1" strokeWidth="1" strokeDasharray="4,4" />
-        <motion.line x1="330" y1="290" x2="200" y2="200" stroke="#cbd5e1" strokeWidth="1" strokeDasharray="4,4" />
+        <motion.line x1="80" y1="110" x2="200" y2="200" stroke="#f59e0b" strokeWidth="1" strokeDasharray="5,5" className="animate-stroke-flow opacity-50" />
+        <motion.line x1="320" y1="80" x2="200" y2="200" stroke="#1a56db" strokeWidth="1.5" strokeDasharray="5,5" className="animate-stroke-flow opacity-55" />
+        <motion.line x1="100" y1="320" x2="200" y2="200" stroke="#10b981" strokeWidth="1" strokeDasharray="5,5" className="animate-stroke-flow opacity-50" />
+        <motion.line x1="330" y1="290" x2="200" y2="200" stroke="#6366f1" strokeWidth="1" strokeDasharray="5,5" className="animate-stroke-flow opacity-50" />
       </svg>
     </div>
   );
@@ -442,11 +442,21 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
-  const { scrollY } = useScroll();
+  const { scrollY, scrollYProgress } = useScroll();
   const heroTextY = useTransform(scrollY, [0, 500], [0, -50]);
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
+      // Toggle back to top button
+      if (window.scrollY > 500) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+
       const sections = ["home", "about", "infrastructure", "programs", "team", "gallery", "resources", "contact"];
       const scrollPosition = window.scrollY + 200;
       for (const section of sections) {
@@ -491,12 +501,12 @@ export default function Home() {
   ];
 
   const programs = [
-    { id: "vinyasa", name: "VINYASA", tagline: "Nurturing Innovation & Entrepreneurship", icon: Sparkles, color: "#1a56db", bg: "#e8f0fe" },
-    { id: "samshodhana", name: "SAMSHODHANA", tagline: "Skill | Research | Innovate | Enterprise", icon: BookOpen, color: "#7c3aed", bg: "#ede9fe" },
-    { id: "she-innovates", name: "SHE INNOVATES", tagline: "Empowering Women to Lead Innovation", icon: Star, color: "#ec4899", bg: "#fce7f3" },
-    { id: "nain-pmu", name: "NAIN PMU", tagline: "New Age Innovation Network", icon: Globe, color: "#f59e0b", bg: "#fef3c7" },
-    { id: "launchpad", name: "VRIF LAUNCHPAD", tagline: "Transforming Ideas into Market-Ready Products", icon: Rocket, color: "#10b981", bg: "#d1fae5" },
-    { id: "tbi-navodaya", name: "TBI NAVODAYA", tagline: "Building Startups Through Structured Incubation", icon: TrendingUp, color: "#6366f1", bg: "#e0e7ff" },
+    { id: "vinyasa", name: "VINYASA", tagline: "Nurturing Innovation & Entrepreneurship", icon: Sparkles, color: "#1a56db", bg: "#e8f0fe", glowClass: "hover-glow-blue" },
+    { id: "samshodhana", name: "SAMSHODHANA", tagline: "Skill | Research | Innovate | Enterprise", icon: BookOpen, color: "#7c3aed", bg: "#ede9fe", glowClass: "hover-glow-purple" },
+    { id: "she-innovates", name: "SHE INNOVATES", tagline: "Empowering Women to Lead Innovation", icon: Star, color: "#ec4899", bg: "#fce7f3", glowClass: "hover-glow-purple" },
+    { id: "nain-pmu", name: "NAIN PMU", tagline: "New Age Innovation Network", icon: Globe, color: "#f59e0b", bg: "#fef3c7", glowClass: "hover-glow-gold" },
+    { id: "launchpad", name: "VRIF LAUNCHPAD", tagline: "Transforming Ideas into Market-Ready Products", icon: Rocket, color: "#10b981", bg: "#d1fae5", glowClass: "hover-glow-green" },
+    { id: "tbi-navodaya", name: "TBI NAVODAYA", tagline: "Building Startups Through Structured Incubation", icon: TrendingUp, color: "#6366f1", bg: "#e0e7ff", glowClass: "hover-glow-indigo" },
   ];
 
   const stats = [
@@ -553,6 +563,9 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen relative" style={{ background: "#f0f4ff", color: "#0d1b3e" }}>
+      {/* Scroll Progress Bar */}
+      <motion.div className="scroll-progress-bar" style={{ scaleX }} />
+
       <RocketCursor />
 
       {/* ═══ FIXED VRIF LOGO BACKGROUND — large, visible, static ═══ */}
@@ -697,7 +710,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════ MARQUEE ═══════════════════ */}
-      <div className="relative overflow-hidden py-4 border-y-2 border-blue-100 bg-white/70 backdrop-blur-[1px] z-10">
+      <div className="relative overflow-hidden py-4 border-y-2 border-blue-100 bg-white/70 backdrop-blur-[1px] z-10 marquee-fade-mask">
         <div className="flex gap-0 animate-marquee whitespace-nowrap">
           {[...marqueeItems, ...marqueeItems].map((item, i) => (
             <span key={i} className="inline-flex items-center text-xs font-bold text-blue-600 uppercase tracking-widest px-6">
@@ -855,7 +868,7 @@ export default function Home() {
               return (
                 <ScrollFloat3D key={i} delay={i * 0.06}>
                   <motion.div whileHover={{ y: -8 }}
-                    className="program-card bg-white rounded-3xl p-7 border border-slate-100 shadow-md hover:shadow-xl transition-all relative overflow-hidden group cursor-pointer h-full"
+                    className={`program-card bg-white rounded-3xl p-7 border border-slate-100 shadow-md hover:shadow-xl transition-all relative overflow-hidden group cursor-pointer h-full ${program.glowClass}`}
                     onClick={() => setSelectedProgram(program.id)}>
                     <div className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl" style={{ background: program.color }} />
                     <div className="flex items-start justify-between mb-5">
@@ -1121,6 +1134,24 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Floating Back to Top Button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.5, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: 30 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="fixed bottom-8 right-8 z-50 p-4 rounded-2xl bg-white/80 hover:bg-blue-600 text-blue-600 hover:text-white border border-blue-100 shadow-xl backdrop-blur-md cursor-pointer transition-colors duration-200"
+            aria-label="Back to top"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
