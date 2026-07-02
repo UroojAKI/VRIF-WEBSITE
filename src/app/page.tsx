@@ -117,68 +117,115 @@ function FloatingParticles() {
   );
 }
 
-/* ΓöÇΓöÇ Floating3DObject ΓÇö Bounded, Concentric 3-Axis 3D Gyroscope Scroll Animation ΓöÇΓöÇ */
-function Floating3DObject() {
-  const { scrollY } = useScroll();
-  // Bounded vertical movement so it stays in the viewport (from -50px to 250px)
-  const y = useTransform(scrollY, [0, 4000], [-50, 250]);
-  const springY = useSpring(y, { stiffness: 40, damping: 25 });
-  
-  // Scroll-driven rotations for the rings
-  const rotateX = useTransform(scrollY, [0, 4000], [0, 360]);
-  const rotateY = useTransform(scrollY, [0, 4000], [0, -720]);
-  const rotateZ = useTransform(scrollY, [0, 4000], [0, 540]);
-  
-  const springX = useSpring(rotateX, { stiffness: 45, damping: 20 });
-  const springYRot = useSpring(rotateY, { stiffness: 45, damping: 20 });
-  const springZ = useSpring(rotateZ, { stiffness: 45, damping: 20 });
-
+/* ── Scene3D — floating 3D spinning cube with orbiting dots ── */
+function Scene3D() {
   return (
-    <motion.div
-      style={{ y: springY }}
-      className="fixed right-[4%] top-[25%] pointer-events-none w-32 h-32 md:w-44 md:h-44 opacity-[0.35] z-[1]">
-      <div className="w-full h-full relative" style={{ transformStyle: "preserve-3d" }}>
-        
-        {/* Outer Ring - Y Axis */}
-        <motion.div 
-          style={{ rotateY: springYRot, transformStyle: "preserve-3d" }}
-          className="absolute inset-0 border-[3px] border-blue-500/50 rounded-full flex items-center justify-center"
-        >
-          {/* Middle Ring - X Axis */}
-          <motion.div 
-            style={{ rotateX: springX, transformStyle: "preserve-3d" }}
-            className="w-[85%] h-[85%] border-[3px] border-indigo-500/50 rounded-full flex items-center justify-center"
-          >
-            {/* Inner Ring - Z Axis */}
-            <motion.div 
-              style={{ rotateZ: springZ }}
-              className="w-[80%] h-[80%] border-2 border-emerald-500/40 rounded-full flex items-center justify-center"
-            >
-              {/* Core */}
-              <motion.div 
-                animate={{ scale: [1, 1.25, 1], opacity: [0.6, 0.9, 0.6] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_0_20px_#f59e0b]"
-              />
-            </motion.div>
-          </motion.div>
-        </motion.div>
-        
-        {/* Orbiting particles */}
-        {[...Array(3)].map((_, i) => (
-          <div 
-            key={i} 
-            className="absolute w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#0ea5e9]"
+    <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none hidden xl:flex items-center justify-center w-48 h-48 z-10">
+      {/* Outer halo */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+        className="absolute w-44 h-44 rounded-full border border-dashed border-blue-300/40"
+      />
+      <motion.div
+        animate={{ rotate: -360 }}
+        transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
+        className="absolute w-32 h-32 rounded-full border border-dashed border-indigo-300/30"
+      />
+      {/* 3D Cube (CSS perspective trick) */}
+      <motion.div
+        animate={{
+          rotateX: [0, 20, -10, 15, 0],
+          rotateY: [0, 60, 120, 180, 240, 300, 360],
+          rotateZ: [0, 5, -5, 3, 0],
+        }}
+        transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+        style={{ transformStyle: "preserve-3d", perspective: 400 }}
+        className="w-20 h-20 relative z-10"
+      >
+        {/* Cube faces */}
+        {[
+          { label: "front",  transform: "translateZ(40px)",               bg: "rgba(26,86,219,0.12)",  border: "rgba(26,86,219,0.4)" },
+          { label: "back",   transform: "translateZ(-40px) rotateY(180deg)", bg: "rgba(14,165,233,0.10)", border: "rgba(14,165,233,0.4)" },
+          { label: "left",   transform: "translateX(-40px) rotateY(-90deg)", bg: "rgba(124,58,237,0.10)", border: "rgba(124,58,237,0.4)" },
+          { label: "right",  transform: "translateX(40px) rotateY(90deg)",  bg: "rgba(16,185,129,0.10)", border: "rgba(16,185,129,0.4)" },
+          { label: "top",    transform: "translateY(-40px) rotateX(90deg)",  bg: "rgba(245,158,11,0.10)", border: "rgba(245,158,11,0.4)" },
+          { label: "bottom", transform: "translateY(40px) rotateX(-90deg)",  bg: "rgba(239,68,68,0.08)",  border: "rgba(239,68,68,0.3)" },
+        ].map((face) => (
+          <div
+            key={face.label}
+            className="absolute inset-0 rounded-xl border"
             style={{
-              top: '50%',
-              left: '50%',
-              transformStyle: "preserve-3d",
-              animation: `orbit-${i} ${8 + i * 4}s linear infinite`
+              transform: face.transform,
+              background: face.bg,
+              borderColor: face.border,
+              backdropFilter: "blur(4px)",
             }}
           />
         ))}
-      </div>
-    </motion.div>
+        {/* Core dot */}
+        <motion.div
+          animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 m-auto w-4 h-4 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-[0_0_16px_rgba(26,86,219,0.6)]"
+        />
+      </motion.div>
+      {/* Orbiting dots */}
+      {[
+        { color: "#1a56db", dur: 5,  r: 52, delay: 0 },
+        { color: "#7c3aed", dur: 7,  r: 52, delay: -2.3 },
+        { color: "#0ea5e9", dur: 9,  r: 52, delay: -4.6 },
+      ].map((dot, i) => (
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            top: `calc(50% - ${dot.r}px)`,
+            left: "50%",
+            width: 10,
+            height: 10,
+            marginLeft: -5,
+            borderRadius: "50%",
+            background: dot.color,
+            boxShadow: `0 0 10px ${dot.color}`,
+            transformOrigin: `0px ${dot.r}px`,
+            animation: `spin-orbit ${dot.dur}s linear ${dot.delay}s infinite`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ── MotionBanner — horizontal scroll-parallax stats strip ── */
+function MotionBanner() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const x1 = useTransform(scrollYProgress, [0, 1], ["0%", "-8%"]);
+  const x2 = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
+
+  const row1 = ["🚀 Startup Incubation", "⚡ Innovation Programs", "🔬 Research Commercialization", "💡 Entrepreneurship", "🤝 Industry Partnerships"];
+  const row2 = ["🏆 NAIN PMU", "👩‍💼 Women Innovators", "🛸 Drone Technology", "🤖 Robotics Lab", "📡 IoT Centre", "🖨️ 3D Prototyping"];
+
+  return (
+    <div ref={ref} className="overflow-hidden py-10 my-4 relative">
+      {/* Row 1 — moves left on scroll */}
+      <motion.div style={{ x: x1 }} className="flex gap-4 mb-4 whitespace-nowrap">
+        {[...row1, ...row1, ...row1].map((item, i) => (
+          <span key={i} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest text-blue-700 bg-white border border-blue-100 shadow-sm flex-shrink-0">
+            {item}
+          </span>
+        ))}
+      </motion.div>
+      {/* Row 2 — moves right on scroll */}
+      <motion.div style={{ x: x2 }} className="flex gap-4 whitespace-nowrap">
+        {[...row2, ...row2, ...row2].map((item, i) => (
+          <span key={i} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest text-purple-700 bg-white border border-purple-100 shadow-sm flex-shrink-0">
+            {item}
+          </span>
+        ))}
+      </motion.div>
+    </div>
   );
 }
 
@@ -384,6 +431,71 @@ function SubscribeCard() {
         )}
       </div>
     </div>
+  );
+}
+
+/* ── SiteFooter — shared across every tab ── */
+function SiteFooter({
+  navLinks,
+  socialLinks,
+  scrollTo,
+}: {
+  navLinks: { id: string; label: string }[];
+  socialLinks: { href: string; label: string; path: string }[];
+  scrollTo: (id: string) => void;
+}) {
+  return (
+    <footer className="bg-white/60 backdrop-blur-[2px] border-t border-blue-100 pt-14 pb-8 relative z-10 mt-12 rounded-3xl">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12 px-6">
+        <div className="md:col-span-5 flex flex-col gap-5">
+          <button onClick={() => scrollTo("overview")} className="flex items-center gap-4 cursor-pointer w-fit">
+            <Image src="/images/vrif_logo_cropped.webp" alt="VRIF Logo" width={280} height={80}
+              className="object-contain" style={{ height: 72, width: "auto" }} />
+          </button>
+          <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
+            Visvesvaraya Research &amp; Innovation Foundation (VRIF) — the innovation and entrepreneurship arm of VTU, Belagavi.
+          </p>
+          <div className="flex items-center gap-3">
+            {socialLinks.map((s, i) => (
+              <a key={i} href={s.href} target="_blank" rel="noopener noreferrer"
+                className="p-2.5 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white transition-all"
+                aria-label={s.label}>
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d={s.path} /></svg>
+              </a>
+            ))}
+          </div>
+        </div>
+        <div className="md:col-span-3 flex flex-col gap-4">
+          <h4 className="text-xs font-black tracking-widest text-slate-400 uppercase">Quick Links</h4>
+          <div className="flex flex-col gap-2.5">
+            {navLinks.map((link) => (
+              <button key={link.id} onClick={() => scrollTo(link.id)}
+                className="text-slate-500 hover:text-blue-600 text-sm font-semibold text-left transition-colors">{link.label}</button>
+            ))}
+          </div>
+        </div>
+        <div className="md:col-span-4 flex flex-col gap-4">
+          <h4 className="text-xs font-black tracking-widest text-slate-400 uppercase">Office Location</h4>
+          <p className="text-slate-500 text-sm leading-relaxed">
+            Silver Jubilee Bhavan, VTU Campus,<br />
+            Jnana Sangama, Machhe,<br />
+            Belagavi – 590018, Karnataka, India
+          </p>
+          <div className="flex flex-col gap-1 mt-2">
+            <a href="mailto:ops@vtuvrif.com" className="text-sm font-bold text-blue-600 hover:underline">ops@vtuvrif.com</a>
+            <a href="tel:9739444818" className="text-sm font-bold text-slate-500 hover:text-blue-600">+91 97394 44818</a>
+          </div>
+        </div>
+      </div>
+      <div className="border-t border-blue-50 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 px-6">
+        <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+          &copy; {new Date().getFullYear()} Visvesvaraya Research &amp; Innovation Foundation. All Rights Reserved.
+        </div>
+        <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+          Innovation Arm of VTU Belagavi
+        </div>
+      </div>
+    </footer>
   );
 }
 
@@ -613,8 +725,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ΓòÉΓòÉΓòÉ SCROLL-FOLLOWING 3D OBJECT ΓòÉΓòÉΓòÉ */}
-      <Floating3DObject />
+
 
       {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ NAVBAR ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
       <header className="sticky top-0 z-50 nav-glass">
@@ -758,7 +869,8 @@ export default function Home() {
                           </motion.div>
                         </motion.div>
 
-                        {/* Right: Innovation Scene */}
+                        <Scene3D />
+
                         <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 1.2, delay: 0.3 }}
                           className="flex items-center justify-center w-full mt-8 lg:mt-0">
@@ -768,32 +880,21 @@ export default function Home() {
                     </div>
                   </section>
 
-                  {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ MARQUEE ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
-                  <div className="relative overflow-hidden py-4 border-y-2 border-blue-100 bg-white/70 backdrop-blur-[1px] z-10 marquee-fade-mask my-8">
-                    <div className="flex gap-0 animate-marquee whitespace-nowrap">
-                      {[...marqueeItems, ...marqueeItems].map((item, i) => (
-                        <span key={i} className="inline-flex items-center text-xs font-bold text-blue-600 uppercase tracking-widest px-6">
-                          <span className="mr-6 text-blue-400 font-bold select-none">ΓÇó</span>
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                  <MotionBanner />
 
-                  {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ IMPACT STATS ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
                   <section className="py-16 relative z-10">
                     <div className="text-center mb-12">
                       <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">Impact at a Glance</span>
                       <h2 className="text-4xl sm:text-5xl font-black text-slate-800 mt-4">Our Numbers <span className="text-gradient-blue">Speak</span></h2>
                     </div>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
                       {stats.map((stat, i) => {
                         const Icon = stat.icon;
                         return (
                           <ScrollFloat3D key={i} delay={i * 0.06}>
                             <MagneticCard intensity={8}>
                               <div
-                                className="stat-card-glow bg-white rounded-3xl p-7 shadow-md text-center relative overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                                className="stat-card-glow bg-white rounded-3xl p-7 shadow-md text-center relative overflow-hidden group transition-all duration-300 hover:shadow-xl"
                                 style={{ "--glow-color": stat.color } as React.CSSProperties}
                               >
                                 <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center transition-transform duration-300 group-hover:scale-110" style={{ background: stat.color + "12" }}>
@@ -873,10 +974,14 @@ export default function Home() {
                       </ScrollFloat3D>
                     </div>
                   </section>
+
+                  {/* FOOTER — overview tab */}
+                  <SiteFooter navLinks={navLinks} socialLinks={socialLinks} scrollTo={scrollTo} />
                 </>
               )}
 
               {activeTab === "labs" && (
+                <>
                 <section id="infrastructure" className="py-16 relative z-10">
                   <div className="absolute inset-0 grid-pattern pointer-events-none opacity-40" />
                   <ScrollFloat3D>
@@ -908,9 +1013,14 @@ export default function Home() {
                     })}
                   </div>
                 </section>
+
+                {/* FOOTER — labs tab */}
+                <SiteFooter navLinks={navLinks} socialLinks={socialLinks} scrollTo={scrollTo} />
+                </>
               )}
 
               {activeTab === "programs" && (
+                <>
                 <section id="programs" className="py-16 bg-transparent relative z-10 overflow-hidden">
                   <ScrollFloat3D>
                     <div className="text-center mb-16">
@@ -950,9 +1060,14 @@ export default function Home() {
                     })}
                   </div>
                 </section>
+
+                {/* FOOTER — programs tab */}
+                <SiteFooter navLinks={navLinks} socialLinks={socialLinks} scrollTo={scrollTo} />
+                </>
               )}
 
               {activeTab === "team" && (
+                <>
                 <section id="team" className="py-16 relative z-10">
                   <ScrollFloat3D>
                     <div className="text-center mb-16">
@@ -1028,9 +1143,14 @@ export default function Home() {
                     </div>
                   </div>
                 </section>
+
+                {/* FOOTER — team tab */}
+                <SiteFooter navLinks={navLinks} socialLinks={socialLinks} scrollTo={scrollTo} />
+                </>
               )}
 
               {activeTab === "gallery" && (
+                <>
                 <section id="gallery" className="py-16 relative z-10 bg-transparent">
                   <ScrollFloat3D>
                     <div className="text-center mb-16">
@@ -1075,11 +1195,15 @@ export default function Home() {
                     </div>
                   )}
                 </section>
+
+                {/* FOOTER — gallery tab */}
+                <SiteFooter navLinks={navLinks} socialLinks={socialLinks} scrollTo={scrollTo} />
+                </>
               )}
 
               {activeTab === "contact" && (
                 <>
-                  {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ RESOURCES ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
+                  {/* Resources */}
                   <section id="resources" className="py-16 relative z-10">
                     <div className="text-center mb-12">
                       <span className="text-xs uppercase tracking-widest text-blue-600 font-extrabold px-4 py-1.5 rounded-full bg-white border border-blue-200 shadow-sm">Resources</span>

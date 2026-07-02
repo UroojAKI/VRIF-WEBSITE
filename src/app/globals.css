@@ -568,6 +568,13 @@ header, section, footer, .relative.z-10 { position: relative; z-index: 1; }
   animation: float-up linear infinite;
 }
 
+/* Scene3D orbiting dots */
+@keyframes spin-orbit {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+
 /* ═══════════════════════════════════════════════════
    HERO WORD REVEAL  (stagger each word)
 ═══════════════════════════════════════════════════ */
