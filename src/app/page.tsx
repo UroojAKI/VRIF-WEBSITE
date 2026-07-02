@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from "framer-motion";
 import {
@@ -15,7 +15,7 @@ import ProgramDetailsModal from "@/components/ProgramDetailsModal";
 import RocketCursor from "@/components/RocketCursor";
 import galleryData from "./gallery_data.json";
 
-/* ΓöÇΓöÇ ScrollFloat3D ΓÇö scroll-triggered 3D entry animation ΓöÇΓöÇ */
+/* ── ScrollFloat3D — scroll-triggered 3D entry animation ── */
 function ScrollFloat3D({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: false, margin: "-60px" });
@@ -27,6 +27,93 @@ function ScrollFloat3D({ children, delay = 0 }: { children: React.ReactNode; del
       style={{ transformStyle: "preserve-3d" }}>
       {children}
     </motion.div>
+  );
+}
+
+/* ── MagneticCard — 3D mouse-parallax tilt wrapper ── */
+function MagneticCard({
+  children,
+  className = "",
+  intensity = 10,
+  style,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  intensity?: number;
+  style?: React.CSSProperties;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [resetting, setResetting] = useState(false);
+
+  const onMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const rx = ((e.clientY - cy) / (r.height / 2)) * -intensity;
+    const ry = ((e.clientX - cx) / (r.width / 2)) * intensity;
+    // also update spotlight --mx --my
+    const mx = ((e.clientX - r.left) / r.width) * 100;
+    const my = ((e.clientY - r.top) / r.height) * 100;
+    ref.current.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(6px)`;
+    ref.current.style.boxShadow = `${ry * -1.5}px ${rx * 1.5}px 40px rgba(26,86,219,0.13), 0 8px 30px rgba(26,86,219,0.07)`;
+    ref.current.style.setProperty("--mx", `${mx}%`);
+    ref.current.style.setProperty("--my", `${my}%`);
+  }, [intensity]);
+
+  const onLeave = useCallback(() => {
+    if (!ref.current) return;
+    setResetting(true);
+    ref.current.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) translateZ(0px)";
+    ref.current.style.boxShadow = "";
+    setTimeout(() => setResetting(false), 550);
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      className={`magnetic-card spotlight-card${resetting ? " resetting" : ""}${className ? " " + className : ""}`}
+      style={style}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ── FloatingParticles — light blue orbs that drift up in the hero ── */
+function FloatingParticles() {
+  const particles = [
+    { size: 6,  left: "8%",  delay: "0s",   dur: "6s",  color: "rgba(26,86,219,0.25)" },
+    { size: 4,  left: "20%", delay: "1.5s", dur: "8s",  color: "rgba(14,165,233,0.3)" },
+    { size: 8,  left: "35%", delay: "0.5s", dur: "7s",  color: "rgba(124,58,237,0.2)" },
+    { size: 5,  left: "50%", delay: "2s",   dur: "9s",  color: "rgba(26,86,219,0.2)" },
+    { size: 7,  left: "65%", delay: "0.8s", dur: "6.5s",color: "rgba(14,165,233,0.25)" },
+    { size: 4,  left: "78%", delay: "3s",   dur: "7.5s",color: "rgba(124,58,237,0.25)" },
+    { size: 5,  left: "90%", delay: "1.2s", dur: "8.5s",color: "rgba(26,86,219,0.3)" },
+    { size: 3,  left: "14%", delay: "4s",   dur: "6s",  color: "rgba(14,165,233,0.2)" },
+    { size: 6,  left: "55%", delay: "2.5s", dur: "9.5s",color: "rgba(26,86,219,0.18)" },
+    { size: 4,  left: "42%", delay: "3.5s", dur: "7s",  color: "rgba(124,58,237,0.18)" },
+  ];
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {particles.map((p, i) => (
+        <div
+          key={i}
+          className="particle"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: p.left,
+            bottom: "10%",
+            background: p.color,
+            animationDelay: p.delay,
+            animationDuration: p.dur,
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -302,27 +389,32 @@ function SubscribeCard() {
 
 const tabOrder = ["overview", "labs", "programs", "team", "gallery", "contact"];
 
+/* Depth-push spring transition — tabs zoom out to Z and spring back */
 const tabVariants = {
   initial: (direction: number) => ({
     opacity: 0,
-    rotateY: direction > 0 ? 90 : -90,
-    scale: 0.95,
+    scale: 0.88,
+    z: -180,
+    rotateY: direction > 0 ? 6 : -6,
   }),
   animate: {
     opacity: 1,
-    rotateY: 0,
     scale: 1,
+    z: 0,
+    rotateY: 0,
     transition: {
-      duration: 0.5,
-      ease: [0.25, 1, 0.5, 1] as const,
+      type: "spring" as const,
+      stiffness: 230,
+      damping: 28,
     },
   },
   exit: (direction: number) => ({
     opacity: 0,
-    rotateY: direction > 0 ? -90 : 90,
-    scale: 0.95,
+    scale: 0.88,
+    z: -180,
+    rotateY: direction > 0 ? -6 : 6,
     transition: {
-      duration: 0.4,
+      duration: 0.32,
       ease: [0.25, 1, 0.5, 1] as const,
     },
   }),
@@ -369,6 +461,18 @@ export default function Home() {
       }
     };
   }, [activeTab]);
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (lightboxIndex === null) return;
+      if (e.key === "ArrowRight") setLightboxIndex((lightboxIndex + 1) % galleryData.length);
+      if (e.key === "ArrowLeft")  setLightboxIndex((lightboxIndex - 1 + galleryData.length) % galleryData.length);
+      if (e.key === "Escape")     setLightboxIndex(null);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [lightboxIndex]);
 
   const scrollTo = (id: string) => {
     setMobileMenuOpen(false);
@@ -584,6 +688,7 @@ export default function Home() {
                 <>
                   {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ HERO ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
                   <section id="home" className="relative min-h-[calc(100vh-140px)] flex items-center overflow-hidden hero-bg z-10 pt-8 pb-12">
+                    <FloatingParticles />
                     <div className="absolute inset-0 dot-pattern opacity-30" />
 
                     {/* Gradient orbs */}
@@ -607,18 +712,32 @@ export default function Home() {
                           </motion.div>
 
                           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
-                            <h1 className="font-rajdhani text-7xl sm:text-8xl xl:text-[10rem] font-black leading-none tracking-tight"
-                              style={{ background: "linear-gradient(135deg, #0d1b3e 0%, #1a56db 50%, #0ea5e9 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                              VRIF
+                            <h1
+                              className="font-rajdhani text-7xl sm:text-8xl xl:text-[10rem] font-black leading-none tracking-tight"
+                              style={{ background: "linear-gradient(135deg, #0d1b3e 0%, #1a56db 50%, #0ea5e9 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+                            >
+                              {["V","R","I","F"].map((ch, i) => (
+                                <span
+                                  key={i}
+                                  className="word-reveal"
+                                  style={{ animationDelay: `${0.1 + i * 0.08}s` }}
+                                >{ch}</span>
+                              ))}
                             </h1>
                             <div className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-[0.25em] mt-2">
-                              Visvesvaraya Research & Innovation Foundation
+                              Visvesvaraya Research &amp; Innovation Foundation
                             </div>
                           </motion.div>
 
                           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black leading-snug text-slate-800">
-                            Transforming Students into<br />
-                            <span className="text-gradient-blue">Entrepreneurs & Innovators</span>
+                            {["Transforming", "Students", "into"].map((w, i) => (
+                              <span key={i} className="word-reveal" style={{ animationDelay: `${0.42 + i * 0.1}s` }}>{w} </span>
+                            ))}<br />
+                            <span className="text-gradient-blue">
+                              {["Entrepreneurs", "&", "Innovators"].map((w, i) => (
+                                <span key={i} className="word-reveal" style={{ animationDelay: `${0.72 + i * 0.1}s` }}>{w} </span>
+                              ))}
+                            </span>
                           </h2>
 
                           <motion.p initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.26 }}
@@ -672,16 +791,20 @@ export default function Home() {
                         const Icon = stat.icon;
                         return (
                           <ScrollFloat3D key={i} delay={i * 0.06}>
-                            <motion.div whileHover={{ scale: 1.05, y: -6 }}
-                              className="card-3d bg-white rounded-3xl p-7 shadow-md text-center relative overflow-hidden group">
-                              <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: stat.color + "12" }}>
-                                <Icon className="w-6 h-6" style={{ color: stat.color }} />
+                            <MagneticCard intensity={8}>
+                              <div
+                                className="stat-card-glow bg-white rounded-3xl p-7 shadow-md text-center relative overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                                style={{ "--glow-color": stat.color } as React.CSSProperties}
+                              >
+                                <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center transition-transform duration-300 group-hover:scale-110" style={{ background: stat.color + "12" }}>
+                                  <Icon className="w-6 h-6" style={{ color: stat.color }} />
+                                </div>
+                                <div className="stat-number mb-1" style={{ color: stat.color }}>
+                                  <AnimatedCounter value={stat.value} />
+                                </div>
+                                <div className="text-xs font-bold text-slate-500 uppercase tracking-wide">{stat.label}</div>
                               </div>
-                              <div className="stat-number mb-1" style={{ color: stat.color }}>
-                                <AnimatedCounter value={stat.value} />
-                              </div>
-                              <div className="text-xs font-bold text-slate-500 uppercase tracking-wide">{stat.label}</div>
-                            </motion.div>
+                            </MagneticCard>
                           </ScrollFloat3D>
                         );
                       })}
@@ -768,14 +891,18 @@ export default function Home() {
                       const Icon = coe.icon;
                       return (
                         <ScrollFloat3D key={i} delay={i * 0.07}>
-                          <motion.div whileHover={{ y: -10 }} className="coe-card rounded-3xl p-7 group h-full hover-glow-blue">
-                            <div className="w-14 h-14 rounded-2xl mb-5 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                              style={{ background: coe.color + "15" }}>
-                              <Icon className="w-7 h-7" style={{ color: coe.color }} />
+                          <MagneticCard>
+                            <div className="coe-card rounded-3xl p-7 group h-full hover-glow-blue">
+                              <div
+                                className="w-14 h-14 rounded-2xl mb-5 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                                style={{ background: coe.color + "15" }}
+                              >
+                                <Icon className="w-7 h-7" style={{ color: coe.color }} />
+                              </div>
+                              <h3 className="text-base font-black text-slate-800 mb-3 leading-tight">{coe.title}</h3>
+                              <p className="text-sm text-slate-500 leading-relaxed">{coe.desc}</p>
                             </div>
-                            <h3 className="text-base font-black text-slate-800 mb-3 leading-tight">{coe.title}</h3>
-                            <p className="text-sm text-slate-500 leading-relaxed">{coe.desc}</p>
-                          </motion.div>
+                          </MagneticCard>
                         </ScrollFloat3D>
                       );
                     })}
@@ -797,21 +924,27 @@ export default function Home() {
                       const Icon = program.icon;
                       return (
                         <ScrollFloat3D key={i} delay={i * 0.06}>
-                          <motion.div whileHover={{ y: -8 }}
-                            className={`program-card bg-white rounded-3xl p-7 border border-slate-100 shadow-md hover:shadow-xl transition-all relative overflow-hidden group cursor-pointer h-full ${program.glowClass}`}
-                            onClick={() => setSelectedProgram(program.id)}>
-                            <div className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl" style={{ background: program.color }} />
-                            <div className="flex items-start justify-between mb-5">
-                              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: program.bg }}>
-                                <Icon className="w-6 h-6" style={{ color: program.color }} />
+                          <MagneticCard>
+                            <div
+                              className={`program-card shimmer-card bg-white rounded-3xl p-7 border border-slate-100 shadow-md hover:shadow-xl transition-all relative overflow-hidden group cursor-pointer h-full ${program.glowClass}`}
+                              onClick={() => setSelectedProgram(program.id)}
+                            >
+                              <div className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl" style={{ background: program.color }} />
+                              <div className="flex items-start justify-between mb-5">
+                                <div
+                                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                                  style={{ background: program.bg }}
+                                >
+                                  <Icon className="w-6 h-6" style={{ color: program.color }} />
+                                </div>
+                              </div>
+                              <h3 className="text-base font-black text-slate-800 mb-2">{program.name}</h3>
+                              <p className="text-sm text-slate-500 leading-relaxed mb-4">{program.tagline}</p>
+                              <div className="flex items-center gap-2 text-sm font-bold opacity-0 group-hover:opacity-100 transition-all mt-auto" style={{ color: program.color }}>
+                                <span>Learn More</span><ArrowRight className="w-4 h-4" />
                               </div>
                             </div>
-                            <h3 className="text-base font-black text-slate-800 mb-2">{program.name}</h3>
-                            <p className="text-sm text-slate-500 leading-relaxed mb-4">{program.tagline}</p>
-                            <div className="flex items-center gap-2 text-sm font-bold opacity-0 group-hover:opacity-100 transition-all mt-auto" style={{ color: program.color }}>
-                              <span>Learn More</span><ArrowRight className="w-4 h-4" />
-                            </div>
-                          </motion.div>
+                          </MagneticCard>
                         </ScrollFloat3D>
                       );
                     })}
@@ -834,13 +967,15 @@ export default function Home() {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
                       {directors.map((d, i) => (
                         <ScrollFloat3D key={i} delay={i * 0.1}>
-                          <motion.div whileHover={{ y: -6 }} className="team-card rounded-3xl p-6 text-center hover-glow-blue">
-                            <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden bg-blue-50 relative">
-                              <Image src={d.img} alt={d.name} fill className="object-cover" sizes="80px" />
+                          <MagneticCard intensity={6}>
+                            <div className="team-card rounded-3xl p-6 text-center hover-glow-blue h-full">
+                              <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden bg-blue-50 relative ring-2 ring-blue-100">
+                                <Image src={d.img} alt={d.name} fill className="object-cover" sizes="80px" />
+                              </div>
+                              <h4 className="text-base font-black text-slate-800 leading-snug">{d.name}</h4>
+                              <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-wider">{d.role}</p>
                             </div>
-                            <h4 className="text-base font-black text-slate-800 leading-snug">{d.name}</h4>
-                            <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-wider">{d.role}</p>
-                          </motion.div>
+                          </MagneticCard>
                         </ScrollFloat3D>
                       ))}
                     </div>
@@ -852,18 +987,20 @@ export default function Home() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                       {tbiTeam.map((member, i) => (
                         <ScrollFloat3D key={i} delay={i * 0.06}>
-                          <motion.div whileHover={{ y: -6 }} className="team-card rounded-3xl p-5 text-center hover-glow-purple">
-                            <div className="w-16 h-16 rounded-full mx-auto mb-3 overflow-hidden bg-purple-50 relative">
-                              <Image src={member.img} alt={member.name} fill className="object-cover" sizes="64px" />
+                          <MagneticCard intensity={6}>
+                            <div className="team-card rounded-3xl p-5 text-center hover-glow-purple h-full">
+                              <div className="w-16 h-16 rounded-full mx-auto mb-3 overflow-hidden bg-purple-50 relative ring-2 ring-purple-100">
+                                <Image src={member.img} alt={member.name} fill className="object-cover" sizes="64px" />
+                              </div>
+                              <h4 className="text-sm font-bold text-slate-800 leading-tight">{member.name}</h4>
+                              <p className="text-[10px] text-slate-400 font-semibold mt-1 uppercase tracking-wider leading-snug min-h-[32px]">{member.role}</p>
+                              <a href={member.linkedin} target="_blank" rel="noopener noreferrer"
+                                className="mt-3.5 inline-flex items-center justify-center p-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all mx-auto cursor-pointer"
+                                aria-label={`${member.name} LinkedIn`}>
+                                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" /></svg>
+                              </a>
                             </div>
-                            <h4 className="text-sm font-bold text-slate-800 leading-tight">{member.name}</h4>
-                            <p className="text-[10px] text-slate-400 font-semibold mt-1 uppercase tracking-wider leading-snug min-h-[32px]">{member.role}</p>
-                            <a href={member.linkedin} target="_blank" rel="noopener noreferrer"
-                              className="mt-3.5 inline-flex items-center justify-center p-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all mx-auto cursor-pointer"
-                              aria-label={`${member.name} LinkedIn`}>
-                              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" /></svg>
-                            </a>
-                          </motion.div>
+                          </MagneticCard>
                         </ScrollFloat3D>
                       ))}
                     </div>
@@ -1095,9 +1232,11 @@ export default function Home() {
               <ChevronLeft className="w-6 h-6" />
             </button>
             <motion.div
-              initial={{ scale: 0.95, y: 15 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 15 }}
+              key={lightboxIndex}
+              initial={{ scale: 0.92, y: 20, opacity: 0 }}
+              animate={{ scale: 1,    y: 0,  opacity: 1 }}
+              exit={{ scale: 0.92,    y: 20, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
               className="relative max-w-4xl w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 border border-white/10"
               onClick={(e) => e.stopPropagation()}
             >
@@ -1110,7 +1249,7 @@ export default function Home() {
                 priority
               />
               <div className="absolute bottom-6 left-6 bg-slate-950/60 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-4 py-2 rounded-full">
-                {lightboxIndex + 1} / {galleryData.length}
+                {lightboxIndex + 1} / {galleryData.length} &nbsp;·&nbsp; ← → to navigate
               </div>
             </motion.div>
             <button
