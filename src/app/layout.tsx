@@ -1,17 +1,5 @@
-﻿import type { Metadata } from "next";
-import { Outfit, Rajdhani } from "next/font/google";
+import type { Metadata } from "next";
 import "./globals.css";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
-
-const rajdhani = Rajdhani({
-  subsets: ["latin"],
-  weight: ["700"],
-  variable: "--font-rajdhani",
-});
 
 export const metadata: Metadata = {
   title: "VTU VRIF | Visvesvaraya Research & Innovation Foundation, Belagavi",
@@ -61,42 +49,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} ${rajdhani.variable} scroll-smooth`} suppressHydrationWarning>
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/images/vrif_logo.webp" type="image/webp" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "GovernmentOrganization",
-              "name": "Visvesvaraya Research & Innovation Foundation (VRIF)",
-              "alternateName": ["VTU VRIF", "VRIF VTU", "VRIF Belagavi"],
-              "url": "https://vtuvrif.com",
-              "logo": "https://vtuvrif.com/images/vrif_logo.webp",
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "Silver Jubilee Bhavan, VTU Campus, Jnana Sangama, Machhe",
-                "addressLocality": "Belagavi",
-                "addressRegion": "Karnataka",
-                "postalCode": "590018",
-                "addressCountry": "IN"
-              },
-              "parentOrganization": {
-                "@type": "CollegeOrUniversity",
-                "name": "Visvesvaraya Technological University (VTU)"
-              },
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "+91-97394-44818",
-                "contactType": "customer service",
-                "email": "ops@vtuvrif.com"
-              }
-            })
-          }}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
         />
       </head>
-      <body className="bg-[#f0f4ff] text-[#0d1b3e] antialiased min-h-screen flex flex-col selection:bg-blue-200 selection:text-blue-900">
+      <body className="antialiased min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-600 selection:text-white" suppressHydrationWarning>
         {children}
       </body>
     </html>
