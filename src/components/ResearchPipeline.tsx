@@ -59,13 +59,13 @@ export default function ResearchPipeline() {
   return (
     <div className="w-full py-12">
       <div className="text-center mb-12">
-        <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 rounded-full mb-3">
+        <span className="inline-flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest text-cyan-700 bg-cyan-100 border border-cyan-200 px-3 py-1 rounded-full mb-3">
           Commercialization Protocol
         </span>
-        <h3 className="text-2xl md:text-4xl font-bold text-white tracking-tight">
+        <h3 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">
           From Academic Lab to <span className="text-gradient-aurora">Global Market</span>
         </h3>
-        <p className="text-slate-400 text-sm max-w-xl mx-auto mt-2">
+        <p className="text-slate-600 font-medium text-sm max-w-xl mx-auto mt-2">
           A structured 6-stage pipeline converting university research into commercial IP and high-growth startups.
         </p>
       </div>

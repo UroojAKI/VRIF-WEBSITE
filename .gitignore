@@ -42,3 +42,9 @@ next-env.d.ts
 
 # raw gallery assets
 /GALLARY
+
+# archives and temp docs
+*.zip
+*.docx
+*.tar.gz
+/scratch/

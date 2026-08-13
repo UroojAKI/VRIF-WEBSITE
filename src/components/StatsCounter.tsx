@@ -25,7 +25,7 @@ const CountUpNumber: React.FC<{ stat: StatItem; active: boolean; durationMs: num
   active,
   durationMs,
 }) => {
-  const [display, setDisplay] = useState(0);
+  const [display, setDisplay] = useState(active ? stat.value : 0);
   const frameRef = useRef<number>(0);
 
   useEffect(() => {
@@ -52,10 +52,13 @@ const CountUpNumber: React.FC<{ stat: StatItem; active: boolean; durationMs: num
     maximumFractionDigits: decimals,
   });
 
+  const fullStaticValue = `${stat.prefix ?? ""}${stat.value}${stat.suffix ?? ""}`;
+
   return (
     <span
       className="text-4xl md:text-5xl font-black tracking-tight"
-      style={stat.color ? { color: stat.color } : { color: "#F8FAFC" }}
+      style={stat.color ? { color: stat.color } : { color: "#0F172A" }}
+      aria-label={`${fullStaticValue} ${stat.label}`}
     >
       {stat.prefix}
       {formatted}
@@ -83,7 +86,7 @@ export default function StatsCounter({
           observer.disconnect();
         }
       },
-      { threshold: 0.25 }
+      { threshold: 0.15 }
     );
 
     observer.observe(el);
@@ -97,36 +100,32 @@ export default function StatsCounter({
     >
       {stats.map((stat, i) => {
         const Icon = stat.icon;
+        const fullStaticText = `${stat.prefix ?? ""}${stat.value}${stat.suffix ?? ""} ${stat.label}`;
+
         return (
           <div
             key={i}
-            className="group relative p-6 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.18] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flex flex-col items-center justify-center gap-2"
+            className="group relative p-6 rounded-3xl bg-white border border-slate-200/80 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
           >
+            {/* Hidden fallback text for SEO crawlers & accessibility */}
+            <span className="sr-only">{fullStaticText}</span>
+
             {Icon && (
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center mb-1"
                 style={{
-                  background: stat.color ? `${stat.color}15` : "rgba(59,130,246,0.15)",
-                  border: stat.color ? `1px solid ${stat.color}30` : "1px solid rgba(59,130,246,0.3)",
+                  background: stat.color ? `${stat.color}15` : "rgba(29,78,216,0.12)",
+                  border: stat.color ? `1px solid ${stat.color}30` : "1px solid rgba(29,78,216,0.2)",
                 }}
               >
-                <Icon className="w-5 h-5" style={stat.color ? { color: stat.color } : { color: "#60A5FA" }} />
+                <Icon className="w-5 h-5" style={stat.color ? { color: stat.color } : { color: "#1D4ED8" }} />
               </div>
             )}
+
             <CountUpNumber stat={stat} active={active} durationMs={durationMs} />
-            <span className="text-xs md:text-sm font-semibold text-slate-400 tracking-wide">
+            <span className="text-xs md:text-sm font-bold text-slate-600 tracking-wide">
               {stat.label}
             </span>
-
-            {/* Hover ambient glow */}
-            <div
-              className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              style={{
-                background: stat.color
-                  ? `radial-gradient(circle at 50% 0%, ${stat.color}15, transparent 70%)`
-                  : "radial-gradient(circle at 50% 0%, rgba(59,130,246,0.15), transparent 70%)",
-              }}
-            />
           </div>
         );
       })}

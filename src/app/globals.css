@@ -296,23 +296,26 @@ header, section, footer, .relative.z-10 { position: relative; z-index: 1; }
 
 /* ---- PARTNER LOGO BOX ---- */
 .partner-box {
-  background: rgba(255, 255, 255, 0.85);
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
   transition: all 0.3s ease;
-  box-shadow: 0 4px 18px rgba(26,86,219,0.05);
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
 }
 .partner-box:hover {
-  background: white;
-  box-shadow: 0 16px 40px rgba(26,86,219,0.14);
-  transform: translateY(-6px) scale(1.03);
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(26, 86, 219, 0.12);
+  border-color: rgba(26, 86, 219, 0.3);
+  transform: translateY(-4px);
 }
 
 /* ---- COE CARD ---- */
 .coe-card {
-  background: white;
-  border: 1px solid rgba(221,230,248,0.8);
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
   transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
 }
 .coe-card::after {
   content: '';
@@ -327,20 +330,21 @@ header, section, footer, .relative.z-10 { position: relative; z-index: 1; }
 .coe-card:hover::after { transform: scaleX(1); }
 .coe-card:hover {
   border-color: rgba(26,86,219,0.3);
-  box-shadow: 0 16px 48px rgba(26,86,219,0.12);
-  transform: translateY(-8px);
+  box-shadow: 0 16px 40px rgba(26,86,219,0.12);
+  transform: translateY(-6px);
 }
 
 /* ---- TEAM CARD ---- */
 .team-card {
-  background: white;
-  border: 1px solid rgba(221,230,248,0.8);
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
   transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
 }
 .team-card:hover {
-  box-shadow: 0 16px 48px rgba(26,86,219,0.14);
+  box-shadow: 0 16px 40px rgba(26,86,219,0.12);
   transform: translateY(-6px);
-  border-color: rgba(26,86,219,0.25);
+  border-color: rgba(26,86,219,0.3);
 }
 
 /* ---- 3D CUBE ---- */

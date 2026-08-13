@@ -747,31 +747,34 @@ export default function Home() {
           </section>
 
           {/* ───── MARQUEE STRIP ───── */}
-          <MarqueeStrip
-            topRow={[
-              "⚡ Deep Tech Acceleration",
-              "🎨 210+ Engineering Campuses",
-              "🔋 TBI Navodaya Incubation",
-              "🛰️ Commercialization Engine",
-              "🧊 Seed Funding & Grants",
-            ]}
-            bottomRow={[
-              "🏆 NAIN PMU",
-              "👩‍💼 She Innovates Cohort",
-              "🛸 Drone Technology CoE",
-              "🤖 Robotics & Automation Lab",
-              "✨ 50+ Portfolio Startups",
-            ]}
-          />
+          {/* Marquee Strip with clean margin spacing */}
+          <div className="relative z-10 my-10 sm:my-16">
+            <MarqueeStrip
+              topRow={[
+                "⚡ Deep Tech Acceleration",
+                "🎨 210+ Engineering Campuses",
+                "🔋 TBI Navodaya Incubation",
+                "🛰️ Commercialization Engine",
+                "🧊 Seed Funding & Grants",
+              ]}
+              bottomRow={[
+                "🏆 NAIN PMU",
+                "👩‍💼 She Innovates Cohort",
+                "🛸 Drone Technology CoE",
+                "🤖 Robotics & Automation Lab",
+                "✨ 50+ Portfolio Startups",
+              ]}
+            />
+          </div>
 
           {/* ───── STATS / IMPACT COUNTER ───── */}
           <section id="stats" className="py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <ScrollReveal className="text-center mb-10">
-                <span className="text-xs uppercase tracking-widest text-blue-400 font-extrabold px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-md">
+                <span className="text-xs uppercase tracking-widest text-blue-700 font-extrabold px-4 py-1.5 rounded-full bg-blue-100 border border-blue-200 inline-block">
                   Impact at a Glance
                 </span>
-                <h2 className="text-4xl sm:text-5xl font-black text-white mt-4">
+                <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mt-4">
                   Our Numbers <span className="text-gradient-blue">Speak</span>
                 </h2>
               </ScrollReveal>
@@ -779,7 +782,7 @@ export default function Home() {
             </div>
           </section>
 
-          <hr className="section-divider" />
+          <hr className="section-divider border-slate-200 my-8" />
 
           {/* ───── ABOUT ───── */}
           <section id="about" className="py-16">
@@ -787,14 +790,14 @@ export default function Home() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <ScrollReveal>
                   <div>
-                    <span className="text-xs uppercase tracking-widest text-blue-400 font-extrabold px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-md">About VRIF</span>
-                    <h2 className="text-4xl sm:text-5xl font-black text-white mt-4 mb-6">
+                    <span className="text-xs uppercase tracking-widest text-blue-700 font-extrabold px-4 py-1.5 rounded-full bg-blue-100 border border-blue-200 inline-block">About VRIF</span>
+                    <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mt-4 mb-6 leading-tight">
                       Karnataka&apos;s Premier<br /><span className="text-gradient-purple">Innovation Engine</span>
                     </h2>
-                    <p className="text-base text-slate-400 leading-relaxed mb-5">
+                    <p className="text-base text-slate-700 leading-relaxed mb-5 font-medium">
                       The Visvesvaraya Research &amp; Innovation Foundation (VRIF) is the Innovation &amp; Entrepreneurship Arm of VTU, Belagavi, registered as a Section 8 Company under the Companies Act 2013.
                     </p>
-                    <p className="text-base text-slate-400 leading-relaxed mb-8">
+                    <p className="text-base text-slate-600 leading-relaxed mb-8 font-medium">
                       VRIF fosters a culture of innovation, entrepreneurship, and research commercialization across Karnataka&apos;s engineering ecosystem — spanning 210+ VTU-affiliated colleges.
                     </p>
                     <div className="grid grid-cols-2 gap-4">
@@ -805,9 +808,9 @@ export default function Home() {
                         { title: "Women Innovation",     desc: "Dedicated She Innovates program for female founders" },
                       ].map((item, i) => (
                         <ScrollReveal key={i} delay={i * 0.08}>
-                          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md h-full hover:border-white/20 transition-all">
-                            <div className="text-sm font-black text-blue-400 mb-1">{item.title}</div>
-                            <div className="text-xs text-slate-400 leading-snug">{item.desc}</div>
+                          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs h-full hover:border-blue-300 transition-all">
+                            <div className="text-sm font-extrabold text-blue-700 mb-1">{item.title}</div>
+                            <div className="text-xs text-slate-600 font-medium leading-snug">{item.desc}</div>
                           </div>
                         </ScrollReveal>
                       ))}
@@ -817,19 +820,19 @@ export default function Home() {
 
                 <ScrollReveal delay={0.15}>
                   <MagneticCard intensity={6}>
-                    <div className="bg-white/[0.03] backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/[0.1] h-full">
+                    <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-200/80 h-full">
                       <div className="w-14 h-14 rounded-2xl mb-5 flex items-center justify-center shadow-lg" style={{ background: "linear-gradient(135deg,#1a56db,#4f46e5)" }}>
                         <Layers className="w-7 h-7 text-white" />
                       </div>
-                      <h3 className="text-xl font-black text-white mb-5">Mission &amp; Vision</h3>
+                      <h3 className="text-xl font-extrabold text-slate-900 mb-5">Mission &amp; Vision</h3>
                       <div className="space-y-4">
-                        <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 backdrop-blur-md">
-                          <div className="text-xs font-black text-blue-400 uppercase tracking-wider mb-1">Mission</div>
-                          <p className="text-sm text-slate-300 leading-snug">To catalyze innovation and entrepreneurship by bridging academic research with real-world impact.</p>
+                        <div className="p-4 rounded-2xl bg-blue-50 border border-blue-100">
+                          <div className="text-xs font-extrabold text-blue-700 uppercase tracking-wider mb-1">Mission</div>
+                          <p className="text-sm text-slate-700 font-medium leading-snug">To catalyze innovation and entrepreneurship by bridging academic research with real-world impact.</p>
                         </div>
-                        <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 backdrop-blur-md">
-                          <div className="text-xs font-black text-purple-400 uppercase tracking-wider mb-1">Vision</div>
-                          <p className="text-sm text-slate-300 leading-snug">To build Karnataka&apos;s most dynamic startup and innovation ecosystem from VTU&apos;s network of institutions.</p>
+                        <div className="p-4 rounded-2xl bg-purple-50 border border-purple-100">
+                          <div className="text-xs font-extrabold text-purple-700 uppercase tracking-wider mb-1">Vision</div>
+                          <p className="text-sm text-slate-700 font-medium leading-snug">To build Karnataka&apos;s most dynamic startup and innovation ecosystem from VTU&apos;s network of institutions.</p>
                         </div>
                       </div>
                     </div>
@@ -845,11 +848,11 @@ export default function Home() {
           <section id="infrastructure" className="py-16 relative">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
               <ScrollReveal className="text-center mb-14">
-                <span className="text-xs uppercase tracking-widest text-blue-400 font-extrabold px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-md">Infrastructure</span>
-                <h2 className="text-4xl sm:text-5xl font-black text-white mt-4">
+                <span className="text-xs uppercase tracking-widest text-blue-700 font-extrabold px-4 py-1.5 rounded-full bg-blue-100 border border-blue-200 inline-block">Infrastructure</span>
+                <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mt-4">
                   Centres of <span className="text-gradient-blue">Excellence</span>
                 </h2>
-                <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-sm leading-relaxed">
+                <p className="text-slate-600 mt-4 max-w-2xl mx-auto text-sm leading-relaxed font-medium">
                   Six advanced labs equipped with industry-grade tools for prototyping, testing, and innovating.
                 </p>
               </ScrollReveal>
@@ -859,16 +862,16 @@ export default function Home() {
                   return (
                     <ScrollReveal key={i} delay={i * 0.07}>
                       <MagneticCard>
-                        <div className="coe-card rounded-3xl p-7 group h-full bg-white/[0.03] border border-white/[0.08] hover:border-white/20 backdrop-blur-xl shadow-lg">
+                        <div className="coe-card rounded-3xl p-7 group h-full bg-white border border-slate-200/80 shadow-md">
                           <div className="flex items-center justify-between mb-5">
                             <div className="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                              style={{ background: coe.color + "20", border: `1px solid ${coe.color}40` }}>
+                              style={{ background: coe.color + "15", border: `1px solid ${coe.color}30` }}>
                               <Icon className="w-6 h-6" style={{ color: coe.color }} />
                             </div>
-                            <span className="font-rajdhani text-3xl font-black text-slate-600 group-hover:text-blue-400 transition-colors">{coe.n}</span>
+                            <span className="font-rajdhani text-3xl font-black text-blue-600 transition-colors">{coe.n}</span>
                           </div>
-                          <h3 className="text-base font-black text-white mb-2 leading-tight">{coe.title}</h3>
-                          <p className="text-sm text-slate-400 leading-relaxed">{coe.desc}</p>
+                          <h3 className="text-base font-extrabold text-slate-900 mb-2 leading-tight">{coe.title}</h3>
+                          <p className="text-sm text-slate-600 font-medium leading-relaxed">{coe.desc}</p>
                         </div>
                       </MagneticCard>
                     </ScrollReveal>
@@ -887,8 +890,8 @@ export default function Home() {
           <section id="programs" className="py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <ScrollReveal className="text-center mb-14">
-                <span className="text-xs uppercase tracking-widest text-purple-400 font-extrabold px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 backdrop-blur-md">VRIF Ecosystem</span>
-                <h2 className="text-4xl sm:text-5xl font-black text-white mt-4">
+                <span className="text-xs uppercase tracking-widest text-purple-700 font-extrabold px-4 py-1.5 rounded-full bg-purple-100 border border-purple-200 inline-block">VRIF Ecosystem</span>
+                <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mt-4">
                   Programs &amp; <span className="text-gradient-purple">Initiatives</span>
                 </h2>
               </ScrollReveal>
@@ -899,14 +902,14 @@ export default function Home() {
                     <ScrollReveal key={i} delay={i * 0.06}>
                       <MagneticCard>
                         <div
-                          className="program-card bg-white/[0.03] backdrop-blur-xl rounded-3xl p-7 border border-white/[0.08] hover:border-white/20 shadow-lg hover:shadow-2xl transition-all relative overflow-hidden group cursor-pointer h-full"
+                          className="program-card bg-white rounded-3xl p-7 border border-slate-200/80 shadow-md hover:shadow-xl transition-all relative overflow-hidden group cursor-pointer h-full"
                           onClick={() => setSelectedProgram(program.id)}>
                           <div className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl" style={{ background: program.color }} />
                           <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110" style={{ background: program.bg }}>
                             <Icon className="w-6 h-6" style={{ color: program.color }} />
                           </div>
-                          <h3 className="text-base font-black text-white mb-2">{program.name}</h3>
-                          <p className="text-sm text-slate-400 leading-relaxed mb-4">{program.tagline}</p>
+                          <h3 className="text-base font-extrabold text-slate-900 mb-2">{program.name}</h3>
+                          <p className="text-sm text-slate-600 font-medium leading-relaxed mb-4">{program.tagline}</p>
                           <div className="flex items-center gap-2 text-sm font-bold opacity-0 group-hover:opacity-100 transition-all mt-auto" style={{ color: program.color }}>
                             <span>Learn More</span><ArrowRight className="w-4 h-4" />
                           </div>
@@ -932,25 +935,25 @@ export default function Home() {
           <section id="team" className="py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <ScrollReveal className="text-center mb-14">
-                <span className="text-xs uppercase tracking-widest text-blue-400 font-extrabold px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-md">People</span>
-                <h2 className="text-4xl sm:text-5xl font-black text-white mt-4">
+                <span className="text-xs uppercase tracking-widest text-blue-700 font-extrabold px-4 py-1.5 rounded-full bg-blue-100 border border-blue-200 inline-block">People</span>
+                <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mt-4">
                   Leadership &amp; <span className="text-gradient-blue">Team</span>
                 </h2>
               </ScrollReveal>
 
               {/* Board of directors */}
               <div className="mb-16">
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 text-center">Board of Directors</h3>
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 text-center">Board of Directors</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                   {directors.map((d, i) => (
                     <ScrollReveal key={i} delay={i * 0.1}>
                       <MagneticCard intensity={6}>
-                        <div className="team-card bg-white/[0.03] backdrop-blur-xl rounded-3xl border border-white/[0.08] hover:border-white/20 shadow-lg p-6 text-center h-full">
+                        <div className="team-card bg-white rounded-3xl border border-slate-200/80 shadow-md p-6 text-center h-full">
                           <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden relative ring-2 ring-blue-500/30">
                             <Image src={d.img} alt={d.name} fill className="object-cover" sizes="96px" />
                           </div>
-                          <h4 className="text-base font-black text-white mb-1">{d.name}</h4>
-                          <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider leading-snug">{d.role}</p>
+                          <h4 className="text-base font-extrabold text-slate-900 mb-1">{d.name}</h4>
+                          <p className="text-xs text-slate-600 font-semibold uppercase tracking-wider leading-snug">{d.role}</p>
                         </div>
                       </MagneticCard>
                     </ScrollReveal>
@@ -960,19 +963,19 @@ export default function Home() {
 
               {/* Execution team */}
               <div className="mb-14">
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 text-center">Execution Team</h3>
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 text-center">Execution Team</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                   {tbiTeam.map((m, i) => (
                     <ScrollReveal key={i} delay={i * 0.05}>
                       <MagneticCard intensity={6}>
-                        <div className="team-card bg-white/[0.03] backdrop-blur-xl rounded-3xl border border-white/[0.08] hover:border-white/20 shadow-lg p-5 text-center h-full">
+                        <div className="team-card bg-white rounded-3xl border border-slate-200/80 shadow-md p-5 text-center h-full">
                           <div className="w-16 h-16 rounded-full mx-auto mb-3 overflow-hidden relative ring-2 ring-purple-500/30">
                             <Image src={m.img} alt={m.name} fill className="object-cover" sizes="64px" />
                           </div>
-                          <h4 className="text-sm font-bold text-white leading-tight">{m.name}</h4>
-                          <p className="text-[10px] text-slate-400 font-semibold mt-1 uppercase tracking-wider leading-snug min-h-[28px]">{m.role}</p>
+                          <h4 className="text-sm font-extrabold text-slate-900 leading-tight">{m.name}</h4>
+                          <p className="text-[10px] text-slate-600 font-semibold mt-1 uppercase tracking-wider leading-snug min-h-[28px]">{m.role}</p>
                           <a href={m.linkedin} target="_blank" rel="noopener noreferrer"
-                            className="mt-3 inline-flex items-center justify-center p-2 rounded-xl bg-white/[0.05] hover:bg-blue-600 text-blue-400 hover:text-white transition-all cursor-pointer border border-white/10" aria-label={`${m.name} LinkedIn`}>
+                            className="mt-3 inline-flex items-center justify-center p-2 rounded-xl bg-slate-100 hover:bg-blue-600 text-blue-600 hover:text-white transition-all cursor-pointer border border-slate-200" aria-label={`${m.name} LinkedIn`}>
                             <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" /></svg>
                           </a>
                         </div>
@@ -984,19 +987,19 @@ export default function Home() {
 
               {/* Partners */}
               <div>
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 text-center">Ecosystem Partners</h3>
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 text-center">Ecosystem Partners</h3>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
                   {partners.map((p, i) => (
                     <ScrollReveal key={i} delay={i * 0.08}>
                       <MagneticCard>
-                        <div className="partner-box bg-white/[0.03] border border-white/[0.08] hover:border-white/20 backdrop-blur-xl shadow-lg p-6 rounded-3xl flex flex-col items-center text-center gap-4 h-full">
-                          <span className="text-[9px] font-black tracking-widest text-slate-400 uppercase">Partner</span>
+                        <div className="partner-box bg-white border border-slate-200/80 shadow-sm hover:shadow-md p-6 rounded-3xl flex flex-col items-center text-center gap-4 h-full">
+                          <span className="text-[9px] font-black tracking-widest text-slate-500 uppercase">Partner</span>
                           <div className="h-14 flex items-center justify-center w-full">
-                            <Image src={p.src} alt={p.name} width={120} height={50} className="object-contain brightness-110" style={{ width: "auto", height: "auto" }} />
+                            <Image src={p.src} alt={p.name} width={120} height={50} className="object-contain brightness-100" style={{ width: "auto", height: "auto" }} />
                           </div>
                           <div>
-                            <h4 className="text-sm font-bold text-white">{p.name}</h4>
-                            <p className="text-[10px] text-slate-400 uppercase tracking-widest">{p.label}</p>
+                            <h4 className="text-sm font-extrabold text-slate-900">{p.name}</h4>
+                            <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">{p.label}</p>
                           </div>
                         </div>
                       </MagneticCard>
@@ -1013,11 +1016,11 @@ export default function Home() {
           <section id="gallery" className="py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <ScrollReveal className="text-center mb-10">
-                <span className="text-xs uppercase tracking-widest text-blue-400 font-extrabold px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-md">Visual Insights</span>
-                <h2 className="text-4xl sm:text-5xl font-black text-white mt-4">
+                <span className="text-xs uppercase tracking-widest text-blue-700 font-extrabold px-4 py-1.5 rounded-full bg-blue-100 border border-blue-200 inline-block">Visual Insights</span>
+                <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mt-4">
                   Life Inside <span className="text-gradient-blue">VRIF</span>
                 </h2>
-                <p className="text-sm text-slate-400 max-w-md mx-auto mt-4 leading-relaxed">
+                <p className="text-sm text-slate-600 max-w-md mx-auto mt-4 leading-relaxed font-medium">
                   Interactive gallery showcasing our innovation labs, hackathons, and ecosystem milestones.
                 </p>
               </ScrollReveal>
@@ -1029,7 +1032,7 @@ export default function Home() {
                 {galleryData.slice(0, visibleCount).map((img, i) => (
                   <ScrollReveal key={i} delay={(i % 3) * 0.05}>
                     <motion.div whileHover={{ y: -6, scale: 1.02 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      className="relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer group shadow-lg border border-white/10"
+                      className="relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer group shadow-md border border-slate-200"
                       onClick={() => setLightboxIndex(i)}>
                       <Image src={img.src} alt={`VRIF Gallery ${i + 1}`} fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -1044,7 +1047,7 @@ export default function Home() {
               {galleryData.length > 6 && (
                 <div className="text-center mt-10">
                   <button onClick={() => setVisibleCount(visibleCount === 6 ? galleryData.length : 6)}
-                    className="btn-outline px-8 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer mx-auto border border-white/20 text-white hover:bg-white/10">
+                    className="btn-outline px-8 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer mx-auto border border-slate-300 text-slate-800 hover:bg-slate-100">
                     {visibleCount === 6 ? "View All Photos" : "Collapse Gallery"}
                     <ChevronRight className={`w-4 h-4 transition-transform ${visibleCount > 6 ? "rotate-90" : ""}`} />
                   </button>
@@ -1053,7 +1056,7 @@ export default function Home() {
             </div>
           </section>
 
-          <hr className="section-divider" />
+          <hr className="section-divider border-slate-200 my-8" />
 
           {/* ───── RESOURCES ───── */}
           <section id="resources" className="py-16">
@@ -1061,13 +1064,13 @@ export default function Home() {
               <div className="max-w-xl mx-auto">
                 <ScrollReveal>
                   <MagneticCard intensity={5}>
-                    <div className="bg-white/[0.03] backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/[0.1] flex flex-col items-center text-center gap-6">
-                      <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: "linear-gradient(135deg,#1a56db,#4f46e5)", boxShadow: "0 0 30px rgba(26,86,219,0.4)" }}>
+                    <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-200/80 flex flex-col items-center text-center gap-6">
+                      <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: "linear-gradient(135deg,#1a56db,#4f46e5)" }}>
                         <Download className="w-8 h-8 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-black text-white mb-2">VRIF Brochure</h3>
-                        <p className="text-sm text-slate-400 leading-relaxed">Official brochure — programs, infrastructure, team, and impact across Karnataka.</p>
+                        <h3 className="text-xl font-extrabold text-slate-900 mb-2">VRIF Brochure</h3>
+                        <p className="text-sm text-slate-600 font-medium leading-relaxed">Official brochure — programs, infrastructure, team, and impact across Karnataka.</p>
                       </div>
                       <a href="/VTU_VRIF_Brochure.pdf" download className="btn-primary px-8 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2 cursor-pointer shadow-lg shadow-blue-500/20">
                         <Download className="w-4 h-4" /> Download PDF
@@ -1079,14 +1082,14 @@ export default function Home() {
             </div>
           </section>
 
-          <hr className="section-divider" />
+          <hr className="section-divider border-slate-200 my-8" />
 
           {/* ───── SUBSCRIBE ───── */}
           <section className="py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <ScrollReveal className="text-center mb-10">
-                <span className="text-xs uppercase tracking-widest text-purple-400 font-extrabold px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 backdrop-blur-md">Innovation Calendar</span>
-                <h2 className="text-4xl sm:text-5xl font-black text-white mt-4">
+                <span className="text-xs uppercase tracking-widest text-purple-700 font-extrabold px-4 py-1.5 rounded-full bg-purple-100 border border-purple-200 inline-block">Innovation Calendar</span>
+                <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mt-4">
                   Events &amp; <span className="text-gradient-purple">Programs</span>
                 </h2>
               </ScrollReveal>

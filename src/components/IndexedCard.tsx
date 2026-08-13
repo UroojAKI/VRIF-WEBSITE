@@ -33,14 +33,14 @@ export default function IndexedCard({
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay }}
       whileHover={{ y: -6 }}
-      className={`group relative rounded-3xl p-7 bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.18] backdrop-blur-xl transition-all duration-300 ${className}`}
+      className={`group relative rounded-3xl p-7 bg-white border border-slate-200/80 hover:border-blue-300 shadow-md hover:shadow-xl transition-all duration-300 ${className}`}
     >
       <div className="flex items-center justify-between mb-4">
-        <span className="block text-xs font-mono font-bold text-white/30 group-hover:text-amber-400 transition-colors duration-300">
+        <span className="block text-xs font-mono font-bold text-blue-600">
           {padded}
         </span>
         {badge && (
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/[0.05] border border-white/10 text-slate-300">
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700">
             {badge}
           </span>
         )}
@@ -48,7 +48,7 @@ export default function IndexedCard({
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center"
             style={{
-              background: `${accentColor}18`,
+              background: `${accentColor}15`,
               border: `1px solid ${accentColor}30`,
             }}
           >
@@ -57,10 +57,10 @@ export default function IndexedCard({
         )}
       </div>
 
-      <h3 className="text-white font-bold text-lg mb-2 tracking-tight group-hover:text-amber-300 transition-colors duration-300">
+      <h3 className="text-slate-900 font-extrabold text-lg mb-2 tracking-tight group-hover:text-blue-600 transition-colors duration-300">
         {title}
       </h3>
-      <p className="text-slate-400 text-sm leading-relaxed">{description}</p>
+      <p className="text-slate-600 font-medium text-sm leading-relaxed">{description}</p>
 
       {/* Subtle hover glow overlay */}
       <div
