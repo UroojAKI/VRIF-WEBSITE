@@ -1,29 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Play, Globe } from "lucide-react";
-import Hls from "hls.js";
+import { useState } from "react";
+import { ArrowUpRight, Play } from "lucide-react";
 import YouTubeModal from "./YouTubeModal";
 
 const LiquidGlassCtaFooter = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [isYtOpen, setIsYtOpen] = useState(false);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const src = "https://stream.mux.com/8wrHPCX2dC3msyYU9ObwqNdm00u3ViXvOSHUMRYSEe5Q.m3u8";
-
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(src);
-      hls.attachMedia(video);
-      return () => hls.destroy();
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = src;
-    }
-  }, []);
 
   const socialLinks = [
     {
@@ -54,27 +36,10 @@ const LiquidGlassCtaFooter = () => {
 
   return (
     <>
-      <section className="relative py-28 px-6 md:px-16 lg:px-24 text-center overflow-hidden bg-slate-950 text-white rounded-t-[40px] my-12 border-t border-slate-800 shadow-2xl">
-        {/* Background HLS Video */}
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover z-0 opacity-40"
-        />
-
-        {/* Top fade */}
-        <div
-          className="absolute top-0 left-0 right-0 z-[1] pointer-events-none"
-          style={{ height: "200px", background: "linear-gradient(to bottom, #020617, transparent)" }}
-        />
-        {/* Bottom fade */}
-        <div
-          className="absolute bottom-0 left-0 right-0 z-[1] pointer-events-none"
-          style={{ height: "200px", background: "linear-gradient(to top, #020617, transparent)" }}
-        />
+      <section className="relative py-28 px-6 md:px-16 lg:px-24 text-center overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950/70 to-slate-950 text-white rounded-t-[40px] my-12 border-t border-slate-800 shadow-2xl">
+        {/* Ambient Glowing Orbs */}
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-600/20 blur-[100px] pointer-events-none rounded-full" />
+        <div className="absolute bottom-0 right-10 w-[400px] h-[200px] bg-purple-600/15 blur-[90px] pointer-events-none rounded-full" />
 
         {/* Content */}
         <div className="relative z-10 max-w-5xl mx-auto">
@@ -92,21 +57,22 @@ const LiquidGlassCtaFooter = () => {
 
           <div className="flex items-center justify-center gap-4 flex-wrap mb-16">
             <button
-              onClick={() => setIsYtOpen(true)}
-              className="px-6 py-3.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-sm flex items-center gap-2.5 shadow-lg shadow-red-600/30 transition-all cursor-pointer hover:scale-105"
-            >
-              <Play className="w-4 h-4 fill-current ml-0.5" />
-              Watch Story on YouTube
-            </button>
-            <button
               onClick={() => {
                 const el = document.getElementById("contact");
                 if (el) el.scrollIntoView({ behavior: "smooth" });
               }}
-              className="liquid-glass-strong rounded-full px-6 py-3.5 text-sm font-bold text-white flex items-center gap-2 hover:bg-white/10 transition-all cursor-pointer border border-white/20"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold px-8 py-4 rounded-full text-base shadow-xl shadow-blue-600/30 hover:scale-105 transition-all flex items-center gap-2 cursor-pointer border border-blue-400/30"
             >
               Apply for Incubation
               <ArrowUpRight className="h-5 w-5" />
+            </button>
+
+            <button
+              onClick={() => setIsYtOpen(true)}
+              className="px-6 py-3.5 rounded-full bg-slate-900/80 hover:bg-slate-900 text-red-400 border border-red-500/30 hover:border-red-500/60 font-bold text-sm flex items-center gap-2 cursor-pointer transition-all hover:scale-105"
+            >
+              <Play className="w-4 h-4 fill-current ml-0.5" />
+              Watch Story on YouTube
             </button>
           </div>
 
