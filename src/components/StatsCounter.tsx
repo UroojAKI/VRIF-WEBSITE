@@ -57,7 +57,7 @@ const CountUpNumber: React.FC<{ stat: StatItem; active: boolean; durationMs: num
   return (
     <span
       className="text-4xl md:text-5xl font-black tracking-tight"
-      style={stat.color ? { color: stat.color } : { color: "#0F172A" }}
+      style={stat.color ? { color: stat.color } : { color: "#60A5FA" }}
       aria-label={`${fullStaticValue} ${stat.label}`}
     >
       {stat.prefix}
@@ -105,7 +105,7 @@ export default function StatsCounter({
         return (
           <div
             key={i}
-            className="group relative p-6 rounded-3xl bg-white border border-slate-200/80 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
+            className="group relative p-6 rounded-3xl bg-white/[0.05] border border-white/[0.08] hover:border-blue-500/30 hover:bg-blue-500/[0.06] transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
           >
             {/* Hidden fallback text for SEO crawlers & accessibility */}
             <span className="sr-only">{fullStaticText}</span>
@@ -123,7 +123,7 @@ export default function StatsCounter({
             )}
 
             <CountUpNumber stat={stat} active={active} durationMs={durationMs} />
-            <span className="text-xs md:text-sm font-bold text-slate-600 tracking-wide">
+            <span className="text-xs md:text-sm font-bold text-slate-400 tracking-wide">
               {stat.label}
             </span>
           </div>
