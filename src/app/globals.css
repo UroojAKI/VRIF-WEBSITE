@@ -25,6 +25,11 @@
   --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-mono), monospace;
   --font-rajdhani: var(--font-rajdhani), 'Rajdhani', sans-serif;
+  --font-syncopate: var(--font-syncopate), 'Syncopate', 'Rajdhani', sans-serif;
+}
+
+@utility bg-gradient-radial {
+  background-image: radial-gradient(var(--tw-gradient-stops));
 }
 
 .font-rajdhani {

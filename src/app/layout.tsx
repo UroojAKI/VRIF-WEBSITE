@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import LenisProvider from "@/components/LenisProvider";
 
 export const metadata: Metadata = {
   title: "VTU VRIF | Visvesvaraya Research & Innovation Foundation, Belagavi",
@@ -54,12 +55,14 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>
       <body className="antialiased min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-600 selection:text-white" suppressHydrationWarning>
-        {children}
+        <LenisProvider>
+          {children}
+        </LenisProvider>
       </body>
     </html>
   );
